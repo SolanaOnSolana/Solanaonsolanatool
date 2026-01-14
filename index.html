@@ -4,39 +4,40 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#070711" />
-  <title>$SOS — Guardian Card Generator</title>
-  <meta name="description" content="Generate your $SOS Guardian Card from your Solana wallet." />
+  <title>$SOS — Guardian Control Center</title>
+  <meta name="description" content="$SOS Guardian Control Center — live on-chain insights." />
 
   <style>
     :root{
       --bg:#070711;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.12);
+
       --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.68);
+      --muted: rgba(255,255,255,.70);
+
       --g:#14F195;
       --c:#00D1FF;
       --p:#9945FF;
+
       --radius: 22px;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --stroke: rgba(255,255,255,.12);
-      --panel: rgba(255,255,255,.06);
-      --max: 980px;
+      --max: 1120px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
       color:var(--text);
-      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font: 15.5px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background: var(--bg);
       overflow-x:hidden;
-      position: relative;
+      position:relative;
     }
     body::before{
       content:"";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
       background:
         radial-gradient(1200px 700px at 10% 5%, rgba(153,69,255,.22), transparent 60%),
         radial-gradient(1000px 650px at 90% 10%, rgba(20,241,149,.18), transparent 55%),
@@ -44,24 +45,88 @@
         var(--bg);
       transform: translateZ(0);
     }
-
+    a{color:inherit; text-decoration:none}
     .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
+
+    /* top bar */
     .topbar{
-      padding:18px 0 10px;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px;
+      position: sticky; top:0; z-index:20;
+      backdrop-filter: blur(14px);
+      background: rgba(7,7,17,.62);
+      border-bottom: 1px solid rgba(255,255,255,.08);
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      user-select:none;
+    .row{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 12px 0;
     }
+    .brand{display:flex; align-items:center; gap:12px; min-width:220px}
     .brand img{
-      width:42px; height:42px; object-fit:contain;
+      width:40px; height:40px; object-fit:contain;
       filter: drop-shadow(0 10px 25px rgba(0,0,0,.45));
     }
-    .brand .t{font-weight:1000; letter-spacing:-.4px; font-size:18px; line-height:1.1}
-    .brand .s{font-weight:800; color:var(--muted); font-size:13px; line-height:1.1}
+    .bt{display:flex; flex-direction:column; line-height:1.05}
+    .bt .t{font-weight:1000; letter-spacing:-.2px; font-size:16px}
+    .bt .s{font-weight:800; color:var(--muted); font-size:12.5px}
 
+    .tabs{display:flex; gap:10px; flex:1; justify-content:center; flex-wrap:wrap}
+    .pill{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.86);
+      font-weight:900; font-size:13px;
+      transition:.15s ease;
+      user-select:none;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pill:hover{background: rgba(255,255,255,.10); transform: translateY(-1px)}
+    .pill.active{
+      border:0;
+      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
+      color:#061012;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+
+    .right{display:flex; align-items:center; gap:10px; min-width:260px; justify-content:flex-end; flex-wrap:wrap}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.88);
+      font-weight:900; font-size:13px;
+      transition:.15s ease;
+      user-select:none;
+      cursor:pointer;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); transform: translateY(-1px)}
+    .btn.grad{
+      border:0;
+      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
+      color:#061012;
+    }
+    .btn[disabled]{opacity:.55; pointer-events:none}
+
+    /* layout */
+    main{padding:22px 0 42px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .row{flex-wrap:wrap}
+      .tabs{order:3; width:100%; justify-content:flex-start}
+      .right{order:2; width:100%; justify-content:flex-start}
+      .grid{grid-template-columns:1fr}
+    }
+
+    /* cards */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05));
       border: 1px solid rgba(255,255,255,.10);
@@ -69,34 +134,96 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .inner{padding:22px}
-
+    .inner{padding:20px}
     .h1{
       margin:0;
       font-weight:1000;
       letter-spacing:-1px;
-      line-height:1.1;
-      font-size: clamp(34px, 4.5vw, 54px);
+      line-height:1.05;
+      font-size: clamp(34px, 4.6vw, 56px);
     }
-    .grad{
+    .gradText{
       background: linear-gradient(90deg, var(--g), var(--c), var(--p));
       -webkit-background-clip:text; background-clip:text; color:transparent;
     }
-    .sub{
-      margin-top:8px;
-      color: rgba(255,255,255,.74);
-      font-weight:750;
+    .sub{margin-top:8px; color:rgba(255,255,255,.74); font-weight:750}
+
+    .kpiGrid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    @media (max-width:980px){ .kpiGrid{grid-template-columns: repeat(2,1fr)} }
+    .kpi{
+      padding:14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+    }
+    .kpi .k{color: rgba(255,255,255,.70); font-weight:850; font-size:12px; letter-spacing:.45px; text-transform:uppercase}
+    .kpi .v{margin-top:8px; font-weight:1000; font-size:20px}
+    .kpi .mini{margin-top:6px; font-weight:800; font-size:12px; color: rgba(255,255,255,.62)}
+
+    .sectionTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-top:16px;
+    }
+    .sectionTitle h2{
+      margin:0;
+      font-size:18px;
+      font-weight:1000;
+      letter-spacing:-.2px;
     }
 
-    .field{margin-top:16px}
-    label{
-      display:block;
-      font-weight:900;
-      color: rgba(255,255,255,.82);
-      font-size:13px;
-      letter-spacing:.3px;
-      margin-bottom:8px;
+    .table{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 18px;
+      overflow:hidden;
     }
+    .tr{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr .8fr;
+      gap:10px;
+      padding:12px 14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      align-items:center;
+    }
+    .tr.head{
+      border-top:0;
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.72);
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+    }
+    .addr{
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-weight:850;
+      color: rgba(255,255,255,.86);
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .muted{color: rgba(255,255,255,.70); font-weight:800}
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-weight:900;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .badge.good{border:0; background: linear-gradient(90deg,var(--g),var(--c),var(--p)); color:#061012}
+    .badge.warn{border-color: rgba(255,220,130,.35); background: rgba(255,220,130,.08); color: rgba(255,240,210,.92)}
+    .badge.bad{border-color: rgba(255,120,150,.35); background: rgba(255,120,150,.10); color: rgba(255,190,205,.95)}
+
+    /* wallet */
+    .field{margin-top:14px}
+    label{display:block; font-weight:950; font-size:12.5px; letter-spacing:.35px; color: rgba(255,255,255,.80); margin-bottom:8px}
     input{
       width:100%;
       padding:14px 14px;
@@ -105,59 +232,28 @@
       background: rgba(0,0,0,.22);
       color: rgba(255,255,255,.92);
       outline:none;
-      font-weight:750;
+      font-weight:800;
       letter-spacing:.2px;
     }
     input:focus{
       border-color: rgba(0,209,255,.45);
-      box-shadow: 0 0 0 3px rgba(0,209,255,.12)
+      box-shadow: 0 0 0 3px rgba(0,209,255,.12);
     }
-
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap;
+    .walletGrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
       margin-top:14px;
     }
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:10px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.88);
-      font-weight:900;
-      font-size:13px;
-      transition: .15s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      cursor:pointer;
-    }
-    .btn:hover{background: rgba(255,255,255,.10); transform: translateY(-1px)}
-    .btn.primary{
-      border: 0;
-      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
-      color: #061012;
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
-    }
-    .btn[disabled]{opacity:.55; pointer-events:none}
+    @media (max-width:520px){ .walletGrid{grid-template-columns:1fr} }
 
-    canvas{
-      width:100%;
-      height:auto;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      box-shadow: var(--shadow);
-      margin-top:18px;
-    }
-
-    #statusLine{
+    .statusLine{
       margin-top:10px;
-      font-size:13px;
-      font-weight:750;
       color: rgba(255,255,255,.70);
+      font-weight:800;
       min-height: 18px;
+      font-size:13px;
     }
-
     footer{
       padding: 18px 0 34px;
       color: rgba(255,255,255,.45);
@@ -165,40 +261,157 @@
       text-align:center;
       font-size:12px;
     }
+
+    /* view switching */
+    .view{display:none}
+    .view.active{display:block}
   </style>
 </head>
 
 <body>
-  <main class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <img id="brandLogo" src="logo.png" alt="$SOS" onerror="this.style.display='none'">
-        <div>
-          <div class="t">$SOS</div>
-          <div class="s">Guardian Card Generator</div>
+  <div class="topbar">
+    <div class="wrap">
+      <div class="row">
+        <div class="brand" aria-label="Home">
+          <img id="brandLogo" src="logo.png" alt="$SOS" onerror="this.style.display='none'">
+          <div class="bt">
+            <div class="t">$SOS</div>
+            <div class="s">Guardian Control Center</div>
+          </div>
+        </div>
+
+        <div class="tabs" aria-label="Tabs">
+          <div class="pill active" data-tab="overview">Overview</div>
+          <div class="pill" data-tab="wallet">Wallet Verdict</div>
+        </div>
+
+        <div class="right">
+          <button class="btn" id="btnRefresh">Refresh</button>
+          <button class="btn grad" id="btnAuto">Auto: ON</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <section class="card">
-      <div class="inner">
-        <h1 class="h1"><span class="grad">Generate</span> your Guardian Card</h1>
-        <div class="sub">Paste your Solana wallet address to generate your personalized card.</div>
+  <main class="wrap">
+    <!-- OVERVIEW -->
+    <section id="view-overview" class="view active">
+      <div class="card">
+        <div class="inner">
+          <h1 class="h1"><span class="gradText">Guardian</span> System</h1>
+          <div class="sub">Live on-chain signal layer for $SOS.</div>
 
-        <div class="field">
-          <label for="wallet">Solana Wallet Address</label>
-          <input id="wallet" placeholder="Enter wallet address…" autocomplete="off" spellcheck="false" />
+          <div class="kpiGrid">
+            <div class="kpi">
+              <div class="k">Guardian Strength</div>
+              <div class="v" id="kStrength">—</div>
+              <div class="mini" id="kStrengthMini">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Supply</div>
+              <div class="v" id="kSupply">—</div>
+              <div class="mini" id="kDecimals">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Top Concentration</div>
+              <div class="v" id="kTop">—</div>
+              <div class="mini" id="kTopMini">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Whale Signal</div>
+              <div class="v" id="kWhale">—</div>
+              <div class="mini" id="kWhaleMini">—</div>
+            </div>
+          </div>
+
+          <div class="sectionTitle">
+            <h2>Whale Watch (Largest Accounts)</h2>
+            <span class="badge" id="lastUpdate">—</span>
+          </div>
+
+          <div class="table" role="table" aria-label="Largest accounts">
+            <div class="tr head" role="row">
+              <div>Address</div><div>Holding</div><div>Tier</div>
+            </div>
+            <div id="largestRows"></div>
+          </div>
+
+          <div class="sectionTitle" style="margin-top:14px">
+            <h2>Distribution Snapshot</h2>
+            <span class="muted" id="distNote">Based on largest accounts</span>
+          </div>
+
+          <div class="kpiGrid" style="margin-top:12px">
+            <div class="kpi">
+              <div class="k">Shrimp</div>
+              <div class="v" id="dShrimp">—</div>
+              <div class="mini">0 – 10k</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Fish</div>
+              <div class="v" id="dFish">—</div>
+              <div class="mini">10k – 100k</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Dolphin</div>
+              <div class="v" id="dDolphin">—</div>
+              <div class="mini">100k – 1M</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Whale</div>
+              <div class="v" id="dWhale">—</div>
+              <div class="mini">1M+</div>
+            </div>
+          </div>
+
+          <div class="statusLine" id="overviewStatus"></div>
         </div>
+      </div>
+    </section>
 
-        <div class="row">
-          <button class="btn primary" id="btnGenerate">Generate</button>
-          <button class="btn" id="btnDownload" disabled>Download PNG</button>
-          <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer"
-             style="opacity:.55; pointer-events:none;">Share on X</a>
+    <!-- WALLET -->
+    <section id="view-wallet" class="view">
+      <div class="card">
+        <div class="inner">
+          <h1 class="h1"><span class="gradText">Wallet</span> Verdict</h1>
+          <div class="sub">Paste a Solana wallet. We read public on-chain data only.</div>
+
+          <div class="field">
+            <label for="wallet">Solana Wallet Address</label>
+            <input id="wallet" placeholder="Enter wallet address…" autocomplete="off" spellcheck="false" />
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
+            <button class="btn grad" id="btnCheck">Run Verdict</button>
+            <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer"
+               style="opacity:.55; pointer-events:none;">Share on X</a>
+          </div>
+
+          <div class="walletGrid">
+            <div class="kpi">
+              <div class="k">Verdict</div>
+              <div class="v" id="wVerdict">—</div>
+              <div class="mini" id="wVerdictMini">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">$SOS Holding</div>
+              <div class="v" id="wHold">—</div>
+              <div class="mini" id="wHoldMini">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Guardian Level</div>
+              <div class="v" id="wLevel">—</div>
+              <div class="mini" id="wLevelMini">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Status</div>
+              <div class="v" id="wStatus">—</div>
+              <div class="mini" id="wStatusMini">—</div>
+            </div>
+          </div>
+
+          <div class="statusLine" id="walletStatus"></div>
         </div>
-
-        <canvas id="card" width="1200" height="1680" aria-label="Guardian Card Preview"></canvas>
-        <div id="statusLine"></div>
       </div>
     </section>
 
@@ -207,40 +420,76 @@
 
 <script>
 /** =========================
- *  CONFIG (already set)
+ *  CONFIG
  *  ========================= */
+const HELIUS_API_KEY = "bb447d37-3c9a-45b8-994a-163fb8a75592";
+
+/* Replace this with your real $SOS mint when you have it */
 const SOS_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
 
-// Strong RPC fallbacks (no keys needed). If one fails/rate-limits, it tries the next.
+/* Robust RPC list: Helius first (your key), then public fallbacks */
 const RPC_URLS = [
+  `https://mainnet.helius-rpc.com/?api-key=${encodeURIComponent(HELIUS_API_KEY)}`,
   "https://api.mainnet-beta.solana.com",
   "https://rpc.ankr.com/solana",
   "https://solana.drpc.org"
 ];
 
 /** =========================
- *  Helpers
+ *  DOM helpers
  *  ========================= */
-const $ = (id) => document.getElementById(id);
+const $ = (id)=>document.getElementById(id);
 $("y").textContent = new Date().getFullYear();
 
-function looksLikeBase58(s){
+async function loadFirst(paths){
+  for(const p of paths){
+    const ok = await new Promise(res=>{
+      const img = new Image();
+      img.onload = ()=>res(img);
+      img.onerror = ()=>res(null);
+      img.src = p;
+    });
+    if(ok) return ok.src;
+  }
+  return null;
+}
+(async ()=>{
+  const src = await loadFirst(["logo.png","assets/logo.png"]);
+  if(src){
+    const el = $("brandLogo");
+    el.src = src;
+    el.style.display = "";
+  }
+})();
+
+function fmt(n){
+  if(n === null || n === undefined || Number.isNaN(n)) return "—";
+  try { return new Intl.NumberFormat("en-US").format(n); } catch { return String(n); }
+}
+function pct(n){ return (Math.round(n*1000)/10).toFixed(1) + "%"; }
+function shortAddr(a){
+  if(!a) return "—";
+  return a.slice(0,4) + "…" + a.slice(-4);
+}
+function looksBase58(s){
   return typeof s === "string"
     && s.length >= 32
     && s.length <= 52
     && /^[1-9A-HJ-NP-Za-km-z]+$/.test(s);
 }
-function shortWallet(w){ return w ? (w.slice(0,4) + "…" + w.slice(-4)) : "—"; }
-function formatNumber(n){
-  try { return new Intl.NumberFormat("en-US").format(n); }
-  catch { return String(n); }
-}
-function setReady(ready){
-  $("btnDownload").disabled = !ready;
-  const share = $("btnShare");
-  share.style.opacity = ready ? "1" : ".55";
-  share.style.pointerEvents = ready ? "auto" : "none";
-}
+
+/** =========================
+ *  Tabs
+ *  ========================= */
+document.querySelectorAll(".pill").forEach(p=>{
+  p.addEventListener("click", ()=>{
+    document.querySelectorAll(".pill").forEach(x=>x.classList.remove("active"));
+    p.classList.add("active");
+    const tab = p.getAttribute("data-tab");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    $("view-" + tab).classList.add("active");
+  });
+});
 
 /** =========================
  *  RPC (robust)
@@ -250,32 +499,29 @@ let _rpcIndex = 0;
 async function rpc(method, params){
   const body = JSON.stringify({ jsonrpc:"2.0", id:1, method, params });
 
-  for(let attempt = 0; attempt < RPC_URLS.length; attempt++){
+  for(let attempt=0; attempt<RPC_URLS.length; attempt++){
     const url = RPC_URLS[_rpcIndex % RPC_URLS.length];
     const controller = new AbortController();
-    const t = setTimeout(() => controller.abort(), 12000);
+    const t = setTimeout(()=>controller.abort(), 12000);
 
     try{
       const res = await fetch(url, {
-        method: "POST",
+        method:"POST",
         headers: {"Content-Type":"application/json"},
         body,
         signal: controller.signal
       });
-
       clearTimeout(t);
 
       if(res.status === 429) throw new Error("Rate limited (429)");
       if(!res.ok){
         const txt = await res.text().catch(()=> "");
-        throw new Error(`HTTP ${res.status} ${txt}`.slice(0,180));
+        throw new Error(`HTTP ${res.status} ${txt}`.slice(0,160));
       }
-
       const j = await res.json();
       if(j.error) throw new Error(j.error.message || "RPC error");
       return j.result;
-
-    } catch(e){
+    }catch(e){
       clearTimeout(t);
       _rpcIndex++;
       if(attempt === RPC_URLS.length - 1) throw e;
@@ -283,460 +529,302 @@ async function rpc(method, params){
   }
 }
 
+/** =========================
+ *  On-chain readers
+ *  ========================= */
+async function getTokenSupply(mint){
+  const r = await rpc("getTokenSupply", [mint]);
+  const ui = Number(r?.value?.uiAmount ?? 0);
+  const decimals = Number(r?.value?.decimals ?? 0);
+  const raw = r?.value?.amount ? BigInt(r.value.amount) : 0n;
+  return { ui, decimals, raw };
+}
+
+async function getLargestAccounts(mint){
+  const r = await rpc("getTokenLargestAccounts", [mint]);
+  // entries: { address, amount, decimals, uiAmountString }
+  return r?.value || [];
+}
+
 async function getSplBalance(owner, mint){
-  const result = await rpc("getTokenAccountsByOwner", [
+  const r = await rpc("getTokenAccountsByOwner", [
     owner,
     { mint },
-    { encoding: "jsonParsed" }
+    { encoding:"jsonParsed" }
   ]);
+  const arr = r?.value || [];
+  if(arr.length === 0) return 0;
 
-  const value = result?.value || [];
-  if(value.length === 0) return 0;
-
-  let totalUi = 0;
-  for(const acc of value){
-    const info = acc?.account?.data?.parsed?.info;
-    const tokenAmount = info?.tokenAmount;
-    if(tokenAmount) totalUi += Number(tokenAmount.uiAmount || 0);
+  let total = 0;
+  for(const it of arr){
+    const ta = it?.account?.data?.parsed?.info?.tokenAmount;
+    if(ta) total += Number(ta.uiAmount || 0);
   }
-  return totalUi;
+  return total;
 }
 
 /** =========================
- *  Assets (logo + optional art)
- *  Tries both root and /assets paths so your setup always works.
+ *  Guardian logic (bullish framing)
  *  ========================= */
-async function loadImage(src){
-  return new Promise((resolve)=>{
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = ()=>resolve(img);
-    img.onerror = ()=>resolve(null);
-    img.src = src;
-  });
+function tierFromHolding(x){
+  if(x >= 1_000_000) return {t:"WHALE", cls:"good"};
+  if(x >= 100_000)   return {t:"DOLPHIN", cls:"badge"};
+  if(x >= 10_000)    return {t:"FISH", cls:"badge"};
+  if(x > 0)          return {t:"SHRIMP", cls:"badge"};
+  return {t:"VOID", cls:"bad"};
 }
-async function loadFirst(paths){
-  for(const p of paths){
-    const img = await loadImage(p);
-    if(img) return img;
-  }
-  return null;
-}
-
-let logoImg = null;
-let artImg  = null;
-
-(async ()=>{
-  // brand logo in UI: if logo.png missing but assets/logo.png exists, swap it
-  const uiLogo = $("brandLogo");
-  if(uiLogo){
-    const test = await loadFirst(["logo.png","assets/logo.png"]);
-    if(test){
-      uiLogo.src = test.src;
-      uiLogo.style.display = "";
-    } else {
-      uiLogo.style.display = "none";
-    }
-  }
-
-  logoImg = await loadFirst(["logo.png","assets/logo.png"]);
-  artImg  = await loadFirst(["sticker.png","assets/sticker.png"]); // optional
-  drawCard({
-    wallet: "—",
-    balance: 0,
-    status: "UNPROTECTED",
-    rarity: "BROKEN",
-    level: "UNBOUND",
-    power: 12,
-    timestamp: new Date()
-  });
-})();
-
-/** =========================
- *  Rarity + Level rules
- *  ========================= */
-function rarityFromHolding(balance){
-  if(balance <= 0) return "BROKEN";
-  if(balance >= 1_000_000) return "DIAMOND HOLO";
-  if(balance >= 100_000) return "HOLO";
-  return "STANDARD";
-}
-function guardianLevel(balance){
-  if(balance >= 10_000_000) return "GUARDIAN";
-  if(balance >= 1_000_000)  return "PROTECTOR";
-  if(balance >= 100_000)    return "SENTINEL";
-  if(balance > 0)           return "WATCHER";
+function levelFromHolding(x){
+  if(x >= 10_000_000) return "GUARDIAN";
+  if(x >= 1_000_000)  return "PROTECTOR";
+  if(x >= 100_000)    return "SENTINEL";
+  if(x > 0)           return "WATCHER";
   return "UNBOUND";
 }
-function powerFromHolding(balance){
-  if(balance <= 0) return 12;
-  const p = Math.floor(Math.log10(balance + 1) * 85 + 40);
-  return Math.max(20, Math.min(180, p));
+function verdictFromHolding(x){
+  if(x >= 1_000_000) return {v:"APPROVED", mini:"Diamond hands detected." , badge:"good"};
+  if(x >= 100_000)   return {v:"APPROVED", mini:"Protected by the Guardian.", badge:"good"};
+  if(x > 0)          return {v:"OBSERVED", mini:"Holding — stay steady.", badge:"warn"};
+  return {v:"REJECTED", mini:"No $SOS detected.", badge:"bad"};
+}
+
+/* Guardian Strength Index:
+   - based on concentration + whale stability signal
+   - uses largest accounts share of supply as proxy
+*/
+function strengthIndex({top10Share, top20Share}){
+  // More distributed (lower share) => stronger social base
+  // We map to 0..100 with a simple curve.
+  const conc = Math.min(0.95, Math.max(0.05, top20Share));
+  const score = Math.round((1 - conc) * 120); // typical 10..90 range
+  const clamped = Math.max(5, Math.min(95, score));
+
+  if(clamped >= 80) return {label:"ASCENDING", mini:"Distribution looks strong.", badge:"good"};
+  if(clamped >= 60) return {label:"STRONG", mini:"Guardian presence is firm.", badge:"good"};
+  if(clamped >= 40) return {label:"STABLE", mini:"Holding line looks steady.", badge:"warn"};
+  return {label:"WEAK", mini:"Concentration risk detected.", badge:"bad"};
 }
 
 /** =========================
- *  Canvas renderer (TCG / Pokémon-inspired layout)
- *  - Own styling (Solana neon + card structure)
- *  - Broken/Standard/Holo/Diamond differences
+ *  Overview refresh
  *  ========================= */
-function rr(ctx,x,y,w,h,r){
-  const rr = Math.min(r, w/2, h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+rr,y);
-  ctx.arcTo(x+w,y,x+w,y+h,rr);
-  ctx.arcTo(x+w,y+h,x,y+h,rr);
-  ctx.arcTo(x,y+h,x,y,rr);
-  ctx.arcTo(x,y,x+w,y,rr);
-  ctx.closePath();
+let lastLargestSnapshot = null; // for whale signal deltas
+
+function setBadge(el, text, cls){
+  el.textContent = text;
+  el.classList.remove("good","warn","bad");
+  if(cls) el.classList.add(cls);
 }
-function holoOverlay(ctx, x, y, w, h, intensity=0.25){
-  ctx.save();
-  ctx.globalAlpha = intensity;
 
-  const g = ctx.createLinearGradient(x, y+h, x+w, y);
-  g.addColorStop(0, "rgba(20,241,149,.00)");
-  g.addColorStop(0.20, "rgba(20,241,149,.28)");
-  g.addColorStop(0.50, "rgba(0,209,255,.22)");
-  g.addColorStop(0.80, "rgba(153,69,255,.28)");
-  g.addColorStop(1, "rgba(153,69,255,.00)");
-  ctx.fillStyle = g;
-  ctx.fillRect(x,y,w,h);
+function clearOverview(){
+  $("overviewStatus").textContent = "";
+  $("largestRows").innerHTML = "";
+}
 
-  ctx.globalAlpha = intensity * 0.55;
-  ctx.fillStyle = "rgba(255,255,255,.18)";
-  for(let yy=y; yy<y+h; yy+=18){
-    for(let xx=x; xx<x+w; xx+=18){
-      if(((xx+yy)/18|0)%3===0) ctx.fillRect(xx,yy,2,2);
+async function refreshOverview(){
+  clearOverview();
+  $("overviewStatus").textContent = "Refreshing…";
+
+  try{
+    const supply = await getTokenSupply(SOS_MINT);
+    const largest = await getLargestAccounts(SOS_MINT);
+
+    const totalUi = supply.ui || 0;
+    const top10 = largest.slice(0,10);
+    const top20 = largest.slice(0,20);
+
+    const sumTop10 = top10.reduce((a,x)=>a + Number(x.uiAmountString || 0), 0);
+    const sumTop20 = top20.reduce((a,x)=>a + Number(x.uiAmountString || 0), 0);
+
+    const top10Share = totalUi > 0 ? (sumTop10 / totalUi) : 0;
+    const top20Share = totalUi > 0 ? (sumTop20 / totalUi) : 0;
+
+    // Guardian strength
+    const s = strengthIndex({top10Share, top20Share});
+    $("kStrength").textContent = s.label;
+    $("kStrengthMini").textContent = s.mini;
+
+    // Supply
+    $("kSupply").textContent = fmt(Math.floor(totalUi));
+    $("kDecimals").textContent = `Decimals: ${supply.decimals}`;
+
+    // Concentration
+    $("kTop").textContent = `Top10 ${pct(top10Share)}`;
+    $("kTopMini").textContent = `Top20 ${pct(top20Share)}`;
+
+    // Whale signal: compare top10 holdings change from last snapshot
+    let whaleMini = "No prior snapshot.";
+    let whaleLabel = "—";
+    let whaleCls = "badge";
+
+    if(lastLargestSnapshot){
+      const prev = lastLargestSnapshot; // Map addr -> amount
+      let deltaAbs = 0;
+      for(const a of top10){
+        const addr = a.address;
+        const now = Number(a.uiAmountString || 0);
+        const before = prev.get(addr) || 0;
+        deltaAbs += Math.abs(now - before);
+      }
+      const deltaPct = totalUi > 0 ? (deltaAbs / totalUi) : 0;
+      // thresholding
+      if(deltaPct < 0.001){
+        whaleLabel = "CALM";
+        whaleMini = "Top holders barely moved.";
+        whaleCls = "good";
+      } else if(deltaPct < 0.005){
+        whaleLabel = "ACTIVE";
+        whaleMini = "Whales are repositioning.";
+        whaleCls = "warn";
+      } else {
+        whaleLabel = "VOLATILE";
+        whaleMini = "Large balance shifts detected.";
+        whaleCls = "bad";
+      }
     }
-  }
-  ctx.restore();
-}
-function crackOverlay(ctx, x, y, w, h){
-  ctx.save();
-  ctx.globalAlpha = 0.55;
-  ctx.strokeStyle = "rgba(0,0,0,.60)";
-  ctx.lineWidth = 6;
+    $("kWhale").textContent = whaleLabel;
+    $("kWhaleMini").textContent = whaleMini;
 
-  const lines = [
-    [[x+w*0.15,y+h*0.20],[x+w*0.40,y+h*0.35],[x+w*0.25,y+h*0.62],[x+w*0.52,y+h*0.80]],
-    [[x+w*0.70,y+h*0.10],[x+w*0.55,y+h*0.28],[x+w*0.78,y+h*0.44],[x+w*0.62,y+h*0.66],[x+w*0.88,y+h*0.86]],
-    [[x+w*0.08,y+h*0.88],[x+w*0.30,y+h*0.72],[x+w*0.18,y+h*0.52]]
-  ];
-  for(const seg of lines){
-    ctx.beginPath();
-    ctx.moveTo(seg[0][0], seg[0][1]);
-    for(let i=1;i<seg.length;i++) ctx.lineTo(seg[i][0], seg[i][1]);
-    ctx.stroke();
-  }
+    // update snapshot map
+    lastLargestSnapshot = new Map(largest.map(x=>[x.address, Number(x.uiAmountString || 0)]));
 
-  const vg = ctx.createRadialGradient(x+w*0.5,y+h*0.55, w*0.1, x+w*0.5,y+h*0.55, w*0.75);
-  vg.addColorStop(0, "rgba(0,0,0,0)");
-  vg.addColorStop(1, "rgba(0,0,0,.55)");
-  ctx.globalAlpha = 0.35;
-  ctx.fillStyle = vg;
-  ctx.fillRect(x,y,w,h);
+    // table rows
+    const frag = document.createDocumentFragment();
+    const show = largest.slice(0,12);
+    let shrimp=0, fish=0, dolphin=0, whale=0;
 
-  ctx.restore();
-}
+    for(const it of show){
+      const addr = it.address;
+      const holding = Number(it.uiAmountString || 0);
+      const tier = tierFromHolding(holding);
+      if(holding >= 1_000_000) whale++;
+      else if(holding >= 100_000) dolphin++;
+      else if(holding >= 10_000) fish++;
+      else if(holding > 0) shrimp++;
 
-function drawCard(data){
-  const c = $("card");
-  const ctx = c.getContext("2d");
-  const W = c.width, H = c.height;
+      const row = document.createElement("div");
+      row.className = "tr";
+      row.innerHTML = `
+        <div class="addr" title="${addr}">${addr}</div>
+        <div class="muted">${fmt(Math.floor(holding))} SOS</div>
+        <div><span class="badge ${tier.cls === 'good' ? 'good' : (tier.t==='VOID'?'bad':'')}">${tier.t}</span></div>
+      `;
+      frag.appendChild(row);
+    }
+    $("largestRows").appendChild(frag);
 
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle = "#070711";
-  ctx.fillRect(0,0,W,H);
+    // distribution snapshot (largest accounts only)
+    $("dShrimp").textContent  = fmt(shrimp);
+    $("dFish").textContent    = fmt(fish);
+    $("dDolphin").textContent = fmt(dolphin);
+    $("dWhale").textContent   = fmt(whale);
 
-  // Outer frame gradient by rarity
-  const pad = 60;
-  const fx = pad, fy = pad, fw = W-pad*2, fh = H-pad*2;
+    const now = new Date();
+    setBadge($("lastUpdate"), now.toLocaleTimeString(), "badge");
 
-  let frameGrad = ctx.createLinearGradient(fx, fy, fx+fw, fy);
-  if(data.rarity === "BROKEN"){
-    frameGrad.addColorStop(0, "rgba(255,255,255,.18)");
-    frameGrad.addColorStop(1, "rgba(255,255,255,.10)");
-  } else if(data.rarity === "STANDARD"){
-    frameGrad.addColorStop(0, "#14F195");
-    frameGrad.addColorStop(0.5, "#00D1FF");
-    frameGrad.addColorStop(1, "#9945FF");
-  } else if(data.rarity === "HOLO"){
-    frameGrad.addColorStop(0, "#00D1FF");
-    frameGrad.addColorStop(0.5, "#14F195");
-    frameGrad.addColorStop(1, "#9945FF");
-  } else { // DIAMOND HOLO
-    frameGrad.addColorStop(0, "#14F195");
-    frameGrad.addColorStop(0.25, "#00D1FF");
-    frameGrad.addColorStop(0.5, "#ffffff");
-    frameGrad.addColorStop(0.75, "#00D1FF");
-    frameGrad.addColorStop(1, "#9945FF");
-  }
+    $("overviewStatus").textContent = `Live: ${s.label} • Top10 ${pct(top10Share)} • Top20 ${pct(top20Share)}`;
 
-  rr(ctx, fx, fy, fw, fh, 54);
-  ctx.lineWidth = 18;
-  ctx.strokeStyle = frameGrad;
-  ctx.stroke();
-
-  // inner panel
-  const ip = 22;
-  const ix = fx+ip, iy = fy+ip, iw = fw-ip*2, ih = fh-ip*2;
-  rr(ctx, ix, iy, iw, ih, 44);
-  ctx.fillStyle = "rgba(255,255,255,.06)";
-  ctx.fill();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(255,255,255,.10)";
-  ctx.stroke();
-
-  // Header box (name + "HP-like" stat)
-  const hx = ix+26, hy = iy+26, hw = iw-52, hh = 128;
-  rr(ctx, hx, hy, hw, hh, 30);
-  ctx.fillStyle = "rgba(0,0,0,.22)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.10)";
-  ctx.stroke();
-
-  ctx.font = "1000 56px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.92)";
-  ctx.fillText("SOLANA", hx+26, hy+80);
-
-  // Right stat
-  ctx.font = "950 34px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.78)";
-  const statText = String(data.power) + " SOL";
-  const m = ctx.measureText(statText).width;
-  ctx.fillText(statText, hx+hw-m-64, hy+54);
-
-  // Type line
-  ctx.font = "850 20px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.70)";
-  ctx.fillText(`GENESIS  •  Solana On Solana  •  ${data.rarity}`, hx+26, hy+118);
-
-  // Small logo symbol
-  if(logoImg){
-    const s = 54;
-    const lx = hx+hw-26-s;
-    const ly = hy+hh-26-s;
-    ctx.save();
-    ctx.globalAlpha = 0.95;
-    ctx.drawImage(logoImg, lx, ly, s, s);
-    ctx.restore();
-  }
-
-  // Art box
-  const ax = ix+26, ay = hy+hh+20, aw = iw-52, ah = 850;
-  rr(ctx, ax, ay, aw, ah, 40);
-  ctx.fillStyle = "rgba(0,0,0,.24)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.10)";
-  ctx.stroke();
-
-  // Glow based on protected/unprotected
-  ctx.save();
-  const ag = ctx.createRadialGradient(ax+aw*0.6, ay+ah*0.35, 20, ax+aw*0.6, ay+ah*0.35, aw*0.85);
-  if(data.status === "PROTECTED"){
-    ag.addColorStop(0, "rgba(20,241,149,.28)");
-    ag.addColorStop(0.55, "rgba(0,209,255,.14)");
-  } else {
-    ag.addColorStop(0, "rgba(255,80,120,.22)");
-    ag.addColorStop(0.55, "rgba(153,69,255,.12)");
-  }
-  ag.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = ag;
-  ctx.fillRect(ax, ay, aw, ah);
-  ctx.restore();
-
-  // Watermark
-  if(logoImg){
-    ctx.save();
-    ctx.globalAlpha = 0.09;
-    const scale = Math.min(aw/(logoImg.width*1.1), ah/(logoImg.height*1.1));
-    const lw = logoImg.width*scale, lh = logoImg.height*scale;
-    ctx.drawImage(logoImg, ax+(aw-lw)/2, ay+(ah-lh)/2 - 30, lw, lh);
-    ctx.restore();
-  }
-
-  // Art (optional sticker)
-  if(artImg){
-    ctx.save();
-    ctx.globalAlpha = 0.98;
-    const maxW = aw*0.62;
-    const maxH = ah*0.78;
-    const s = Math.min(maxW/artImg.width, maxH/artImg.height);
-    const w = artImg.width*s, h = artImg.height*s;
-    const px = ax + aw*0.10;
-    const py = ay + ah*0.12;
-    ctx.drawImage(artImg, px, py, w, h);
-    ctx.restore();
-  } else {
-    // placeholder silhouette
-    ctx.save();
-    ctx.globalAlpha = 0.20;
-    ctx.fillStyle = "rgba(255,255,255,.75)";
-    rr(ctx, ax+aw*0.12, ay+ah*0.18, aw*0.32, ah*0.60, 70);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // Holo overlays
-  if(data.rarity === "HOLO") holoOverlay(ctx, ax, ay, aw, ah, 0.22);
-  if(data.rarity === "DIAMOND HOLO") holoOverlay(ctx, ax, ay, aw, ah, 0.32);
-  if(data.rarity === "BROKEN") crackOverlay(ctx, ax, ay, aw, ah);
-
-  // Ability box
-  const bx = ax, by = ay+ah+20, bw = aw, bh = 92;
-  rr(ctx, bx, by, bw, bh, 28);
-  ctx.fillStyle = "rgba(0,0,0,.22)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.10)";
-  ctx.stroke();
-
-  ctx.font = "950 28px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.90)";
-  ctx.fillText("Ability  ▲  Proof of Protection", bx+24, by+58);
-
-  // Stats panel
-  const sx = ix+26, sy = by+bh+16, sw = iw-52, sh = ih - (sy-iy) - 26;
-  rr(ctx, sx, sy, sw, sh, 36);
-  ctx.fillStyle = "rgba(0,0,0,.20)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.10)";
-  ctx.stroke();
-
-  // Left labels
-  ctx.font = "850 22px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.72)";
-  const lX = sx+26, lY = sy+54, gap=64;
-  ctx.fillText("Status", lX, lY);
-  ctx.fillText("Holding", lX, lY+gap);
-  ctx.fillText("Guardian Level", lX, lY+gap*2);
-  ctx.fillText("Wallet", lX, lY+gap*3);
-
-  // Values
-  ctx.font = "1000 26px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.92)";
-  ctx.fillText(data.status, lX+210, lY);
-  ctx.fillText(`${formatNumber(Math.floor(data.balance))} SOS`, lX+210, lY+gap);
-  ctx.fillText(data.level, lX+210, lY+gap*2);
-  ctx.fillText(shortWallet(data.wallet), lX+210, lY+gap*3);
-
-  // Bottom divider + "weakness/resistance/retreat" line
-  const bottomY = sy+sh-54;
-  ctx.save();
-  ctx.globalAlpha = 0.85;
-  ctx.strokeStyle = "rgba(255,255,255,.14)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(sx+26, bottomY);
-  ctx.lineTo(sx+sw-26, bottomY);
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.font = "900 18px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.70)";
-  ctx.fillText("Weakness", sx+26, bottomY+32);
-  ctx.fillText("Resistance", sx+sw*0.40, bottomY+32);
-  ctx.fillText("Retreat", sx+sw*0.72, bottomY+32);
-
-  ctx.font = "1000 20px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.90)";
-  ctx.fillText(data.status === "PROTECTED" ? "FUD ×2" : "FUD ×4", sx+26, bottomY+56);
-  ctx.fillText(data.rarity.includes("HOLO") ? "LATENCY -20" : "LATENCY 0", sx+sw*0.40, bottomY+56);
-  ctx.fillText(data.level === "UNBOUND" ? "★★★" : "★", sx+sw*0.72, bottomY+56);
-
-  const ts = new Date(data.timestamp || Date.now()).toISOString().replace("T"," ").slice(0,19) + " UTC";
-  ctx.font = "800 16px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.55)";
-  ctx.fillText(`SET: SOS-GENESIS • ${ts}`, sx+26, sy+sh-18);
-
-  if(data.rarity === "DIAMOND HOLO"){
-    holoOverlay(ctx, ix, iy, iw, ih, 0.10);
+  }catch(e){
+    console.error(e);
+    $("overviewStatus").textContent = "RPC error: " + (e?.message || "unknown");
   }
 }
 
 /** =========================
- *  Share + Download
+ *  Wallet verdict
  *  ========================= */
-function makeShareUrl({walletShort, balance, status, rarity, level}){
-  const base = window.location.href;
-  const text =
-`🃏 $SOS Guardian Card
-Status: ${status} • ${rarity}
+function makeShareText({verdict, holding, level, status, walletShort}){
+  return `🛡️ $SOS Guardian Verdict
+
+Verdict: ${verdict}
+Status: ${status}
 Level: ${level}
-Holding: ${formatNumber(Math.floor(balance))} SOS
+Holding: ${fmt(Math.floor(holding))} SOS
 Wallet: ${walletShort}
 
-Generate yours: ${base}`;
-  const u = new URL("https://x.com/intent/tweet");
-  u.searchParams.set("text", text);
-  return u.toString();
+Guardian Control Center:
+${location.href}`;
 }
 
-/** =========================
- *  Generate
- *  ========================= */
-async function generate(){
+async function runVerdict(){
   const w = $("wallet").value.trim();
-  $("statusLine").textContent = "";
-  setReady(false);
+  $("walletStatus").textContent = "";
+  $("btnShare").style.opacity = ".55";
+  $("btnShare").style.pointerEvents = "none";
 
-  if(!looksLikeBase58(w)){
-    $("statusLine").textContent = "Invalid wallet address.";
+  if(!looksBase58(w)){
+    $("walletStatus").textContent = "Invalid wallet address.";
     return;
   }
 
   try{
-    $("statusLine").textContent = "Generating…";
-    const bal = await getSplBalance(w, SOS_MINT);
+    $("walletStatus").textContent = "Scanning…";
+    const holding = await getSplBalance(w, SOS_MINT);
 
-    const status = bal > 0 ? "PROTECTED" : "UNPROTECTED";
-    const rarity = rarityFromHolding(bal);
-    const level  = guardianLevel(bal);
-    const power  = powerFromHolding(bal);
+    const verdict = verdictFromHolding(holding);
+    const level = levelFromHolding(holding);
+    const status = holding > 0 ? "PROTECTED" : "UNPROTECTED";
 
-    drawCard({
-      wallet: w,
-      balance: bal,
-      status,
-      rarity,
+    $("wVerdict").textContent = verdict.v;
+    $("wVerdictMini").textContent = verdict.mini;
+
+    $("wHold").textContent = `${fmt(Math.floor(holding))} SOS`;
+    $("wHoldMini").textContent = holding > 0 ? "Holding detected." : "No tokens found.";
+
+    $("wLevel").textContent = level;
+    $("wLevelMini").textContent = (level === "UNBOUND") ? "Earn status by holding." : "Guardian alignment confirmed.";
+
+    $("wStatus").textContent = status;
+    $("wStatusMini").textContent = status === "PROTECTED" ? "Guardian shield is active." : "No shield.";
+
+    // share
+    const text = makeShareText({
+      verdict: verdict.v,
+      holding,
       level,
-      power,
-      timestamp: new Date()
-    });
-
-    $("btnShare").href = makeShareUrl({
-      walletShort: shortWallet(w),
-      balance: bal,
       status,
-      rarity,
-      level
+      walletShort: shortAddr(w)
     });
+    const u = new URL("https://x.com/intent/tweet");
+    u.searchParams.set("text", text);
+    $("btnShare").href = u.toString();
+    $("btnShare").style.opacity = "1";
+    $("btnShare").style.pointerEvents = "auto";
 
-    $("statusLine").textContent = `${status} • ${rarity} • ${formatNumber(Math.floor(bal))} SOS`;
-    setReady(true);
+    $("walletStatus").textContent = `${verdict.v} • ${status} • ${fmt(Math.floor(holding))} SOS`;
 
-  } catch(e){
+  }catch(e){
     console.error(e);
-    $("statusLine").textContent = "RPC error: " + (e?.message || "unknown");
+    $("walletStatus").textContent = "RPC error: " + (e?.message || "unknown");
   }
 }
 
-$("btnGenerate").addEventListener("click", generate);
-$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") generate(); });
+$("btnCheck").addEventListener("click", runVerdict);
+$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") runVerdict(); });
 
-$("btnDownload").addEventListener("click", ()=>{
-  const c = $("card");
-  c.toBlob((blob)=>{
-    if(!blob) return;
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    a.href = url;
-    a.download = "sos-guardian-card.png";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }, "image/png");
-});
+/** =========================
+ *  Auto refresh
+ *  ========================= */
+let autoOn = true;
+let timer = null;
+
+function setAuto(on){
+  autoOn = on;
+  $("btnAuto").textContent = `Auto: ${on ? "ON" : "OFF"}`;
+  $("btnAuto").classList.toggle("grad", on);
+  if(timer){ clearInterval(timer); timer = null; }
+  if(on){
+    timer = setInterval(refreshOverview, 30000);
+  }
+}
+
+$("btnAuto").addEventListener("click", ()=> setAuto(!autoOn));
+$("btnRefresh").addEventListener("click", refreshOverview);
+
+/** =========================
+ *  Init
+ *  ========================= */
+setAuto(true);
+refreshOverview();
 </script>
 </body>
 </html>
