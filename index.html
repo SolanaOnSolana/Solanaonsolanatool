@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#070711" />
+  <title>$SOS — Guardian Card Generator</title>
+  <meta name="description" content="Generate your $SOS Guardian Card from your Solana wallet." />
+
+  <style>
+    :root{
+      --bg:#070711;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.12);
+
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+
+      --g:#14F195;
+      --c:#00D1FF;
+      --p:#9945FF;
+
+      --radius: 22px;
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+      --max: 1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: var(--bg);
+      overflow-x:hidden;
+      position: relative;
+    }
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events:none;
+      background:
+        radial-gradient(1200px 700px at 10% 5%, rgba(153,69,255,.22), transparent 60%),
+        radial-gradient(1000px 650px at 90% 10%, rgba(20,241,149,.18), transparent 55%),
+        radial-gradient(900px 600px at 70% 85%, rgba(0,209,255,.14), transparent 55%),
+        var(--bg);
+      transform: translateZ(0);
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
+
+    .header{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter: blur(14px);
+      background: rgba(7,7,17,.62);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .headerRow{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      padding:12px 0;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      white-space:nowrap;
+    }
+    .brand img{
+      width:40px; height:40px; object-fit:contain;
+      filter: drop-shadow(0 10px 25px rgba(0,0,0,.45));
+    }
+    .brandText{display:flex; flex-direction:column; line-height:1.05}
+    .brandText .ticker{font-weight:900; letter-spacing:.2px; font-size:18px}
+    .brandText .name{font-weight:700; color:var(--muted); font-size:14px}
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.88);
+      font-weight:850;
+      font-size:13px;
+      transition: .15s ease;
+      white-space:nowrap;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      cursor:pointer;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); transform: translateY(-1px)}
+    .btn.grad{
+      border: 0;
+      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
+      color: #061012;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+
+    section{padding:28px 0}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+    }
+    .cardInner{padding:22px}
+    .h1{
+      margin:0;
+      font-weight:1000;
+      letter-spacing:-1px;
+      line-height:1.1;
+      font-size: clamp(34px, 4.5vw, 54px);
+    }
+    .gradText{
+      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .sub{color:var(--muted); font-weight:650; margin-top:8px}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+
+    .field{
+      display:flex; flex-direction:column; gap:8px;
+      margin-top:14px;
+    }
+    label{font-weight:900; color:rgba(255,255,255,.82); font-size:13px; letter-spacing:.3px}
+    input{
+      width:100%;
+      padding:14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.92);
+      outline:none;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    input:focus{border-color: rgba(0,209,255,.45); box-shadow: 0 0 0 3px rgba(0,209,255,.12)}
+    .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+
+    .note{
+      margin-top:10px;
+      color: rgba(255,255,255,.62);
+      font-weight:650;
+      font-size:13px;
+    }
+
+    .statRow{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+    }
+    .stat{
+      padding:14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+    }
+    .stat .k{color: rgba(255,255,255,.68); font-weight:850; font-size:12px; letter-spacing:.5px; text-transform:uppercase}
+    .stat .v{margin-top:8px; font-weight:950; font-size:18px}
+
+    canvas{
+      width:100%;
+      height:auto;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      box-shadow: var(--shadow2);
+    }
+
+    .toast{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.82);
+      font-weight:700;
+      display:none;
+    }
+    .toast.show{display:block}
+    .muted{color:var(--muted)}
+    footer{
+      padding: 18px 0 34px;
+      color: rgba(255,255,255,.55);
+      font-weight:600;
+      text-align:center;
+    }
+    .tiny{font-size:12px; opacity:.8}
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="headerRow">
+        <a class="brand" href="../" aria-label="Home">
+          <img src="../assets/logo.png" alt="$SOS Logo" onerror="this.style.display='none'"/>
+          <div class="brandText">
+            <div class="ticker">$SOS</div>
+            <div class="name">Guardian Card Generator</div>
+          </div>
+        </a>
+        <div class="row">
+          <a class="btn" href="../#tokenomics">Tokenomics</a>
+          <a class="btn grad" href="../#socials">Socials</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <section>
+      <div class="card">
+        <div class="cardInner">
+          <div class="h1"><span class="gradText">Generate</span> your Guardian Card</div>
+          <div class="sub">Wallet rein → on-chain $SOS Balance → Trading-Card als PNG. Perfekt für X.</div>
+
+          <div class="grid" style="margin-top:16px">
+            <!-- LEFT: Controls -->
+            <div>
+              <div class="field">
+                <label for="wallet">Solana Wallet Address</label>
+                <input id="wallet" placeholder="z.B. 7Hk9... (Base58 Address)" autocomplete="off" spellcheck="false" />
+                <div class="note">Wir lesen nur öffentliche On-Chain Daten. Kein Signieren. Kein Connect.</div>
+              </div>
+
+              <div class="row">
+                <button class="btn grad" id="btnGenerate">Generate Card</button>
+                <button class="btn" id="btnDownload" disabled>Download PNG</button>
+                <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer" aria-disabled="true" style="opacity:.55; pointer-events:none;">Share on X</a>
+              </div>
+
+              <div class="toast" id="toast"></div>
+
+              <div class="statRow">
+                <div class="stat">
+                  <div class="k">Status</div>
+                  <div class="v" id="uiStatus">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Holding</div>
+                  <div class="v" id="uiHolding">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Guardian Level</div>
+                  <div class="v" id="uiLevel">—</div>
+                </div>
+                <div class="stat">
+                  <div class="k">Wallet</div>
+                  <div class="v" id="uiWallet">—</div>
+                </div>
+              </div>
+
+              <div class="note tiny">
+                Tipp: du kannst das später upgraden mit “Holding since”, Rank, Jeeter-Score (mit Indexer).
+              </div>
+            </div>
+
+            <!-- RIGHT: Canvas -->
+            <div>
+              <canvas id="card" width="1200" height="1600" aria-label="Guardian Card Preview"></canvas>
+              <div class="note tiny muted">Preview ist das finale PNG (wird genau so exportiert).</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="y"></span> $SOS — Solana on Solana. For community & entertainment. Public on-chain data only.
+    </footer>
+  </main>
+
+<script>
+/** =========================
+ *  CONFIG — EDIT THESE 1–2 LINES
+ *  ========================= */
+const SOS_MINT = "PUT_YOUR_SOS_MINT_ADDRESS_HERE"; // <-- HIER deine Mint rein (wichtig)
+const RPC_URL  = "https://api.mainnet-beta.solana.com"; // optional: besser eigener RPC (Helius/QuickNode) für Stabilität
+
+/** =========================
+ *  UI helpers
+ *  ========================= */
+const $ = (id) => document.getElementById(id);
+const toast = (msg, kind="info") => {
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  if(kind === "ok"){
+    el.style.borderColor = "rgba(20,241,149,.35)";
+  } else if(kind === "bad"){
+    el.style.borderColor = "rgba(255,80,120,.35)";
+  } else {
+    el.style.borderColor = "rgba(255,255,255,.10)";
+  }
+  window.clearTimeout(toast._t);
+  toast._t = window.setTimeout(()=> el.classList.remove("show"), 2400);
+};
+
+$("y").textContent = new Date().getFullYear();
+
+/** =========================
+ *  Minimal base58 check (not perfect, but catches obvious bad input)
+ *  ========================= */
+function looksLikeBase58(s){
+  return typeof s === "string"
+    && s.length >= 32
+    && s.length <= 50
+    && /^[1-9A-HJ-NP-Za-km-z]+$/.test(s);
+}
+function shortWallet(w){
+  if(!w) return "—";
+  return w.slice(0,4) + "…" + w.slice(-4);
+}
+function formatNumber(n){
+  try { return new Intl.NumberFormat("en-US").format(n); }
+  catch { return String(n); }
+}
+
+/** =========================
+ *  Solana RPC calls (JSON-RPC)
+ *  ========================= */
+async function rpc(method, params){
+  const res = await fetch(RPC_URL, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params })
+  });
+  if(!res.ok) throw new Error("RPC HTTP " + res.status);
+  const j = await res.json();
+  if(j.error) throw new Error(j.error.message || "RPC error");
+  return j.result;
+}
+
+// Reads token balance for given owner+mint using parsed token accounts
+async function getSplBalance(owner, mint){
+  // getTokenAccountsByOwner with mint filter (parsed)
+  const result = await rpc("getTokenAccountsByOwner", [
+    owner,
+    { mint },
+    { encoding: "jsonParsed" }
+  ]);
+
+  const value = result?.value || [];
+  if(value.length === 0) return { amount: 0, decimals: 0 };
+
+  // sum all token accounts just in case
+  let totalUi = 0;
+  let decimals = 0;
+  for(const acc of value){
+    const info = acc?.account?.data?.parsed?.info;
+    const tokenAmount = info?.tokenAmount;
+    if(tokenAmount){
+      decimals = tokenAmount.decimals ?? decimals;
+      totalUi += Number(tokenAmount.uiAmount || 0);
+    }
+  }
+  return { amount: totalUi, decimals };
+}
+
+/** =========================
+ *  Guardian logic (you can tweak thresholds)
+ *  ========================= */
+function guardianLevel(balance){
+  // tweak as you want
+  if(balance >= 10_000_000) return { name: "GUARDIAN", tier: 4 };
+  if(balance >= 1_000_000)  return { name: "PROTECTOR", tier: 3 };
+  if(balance >= 100_000)    return { name: "SENTINEL", tier: 2 };
+  if(balance > 0)           return { name: "WATCHER", tier: 1 };
+  return { name: "UNBOUND", tier: 0 };
+}
+
+function jeeterRisk(balance){
+  // meme-ish; adjust freely
+  if(balance === 0) return "HIGH";
+  if(balance < 50_000) return "MEDIUM";
+  return "LOW";
+}
+
+/** =========================
+ *  Assets (optional logo)
+ *  ========================= */
+async function loadImage(src){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+let logoImg = null;
+(async ()=>{
+  logoImg = await loadImage("../assets/logo.png");
+  drawCard({
+    wallet: "—",
+    balance: 0,
+    status: "—",
+    level: {name:"—", tier:0},
+    risk: "—",
+    timestamp: new Date()
+  });
+})();
+
+/** =========================
+ *  Canvas Card Renderer
+ *  ========================= */
+function drawRoundedRect(ctx, x, y, w, h, r){
+  const rr = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr, y);
+  ctx.arcTo(x+w, y, x+w, y+h, rr);
+  ctx.arcTo(x+w, y+h, x, y+h, rr);
+  ctx.arcTo(x, y+h, x, y, rr);
+  ctx.arcTo(x, y, x+w, y, rr);
+  ctx.closePath();
+}
+
+function drawCard(data){
+  const c = $("card");
+  const ctx = c.getContext("2d");
+  const W = c.width, H = c.height;
+
+  // background
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = "#070711";
+  ctx.fillRect(0,0,W,H);
+
+  // subtle radial glows
+  const rg1 = ctx.createRadialGradient(W*0.15,H*0.15, 20, W*0.15,H*0.15, W*0.7);
+  rg1.addColorStop(0, "rgba(153,69,255,.20)");
+  rg1.addColorStop(1, "rgba(153,69,255,0)");
+  ctx.fillStyle = rg1; ctx.fillRect(0,0,W,H);
+
+  const rg2 = ctx.createRadialGradient(W*0.85,H*0.18, 20, W*0.85,H*0.18, W*0.65);
+  rg2.addColorStop(0, "rgba(20,241,149,.16)");
+  rg2.addColorStop(1, "rgba(20,241,149,0)");
+  ctx.fillStyle = rg2; ctx.fillRect(0,0,W,H);
+
+  const rg3 = ctx.createRadialGradient(W*0.70,H*0.85, 20, W*0.70,H*0.85, W*0.70);
+  rg3.addColorStop(0, "rgba(0,209,255,.12)");
+  rg3.addColorStop(1, "rgba(0,209,255,0)");
+  ctx.fillStyle = rg3; ctx.fillRect(0,0,W,H);
+
+  // outer gradient frame
+  const pad = 70;
+  const frameX = pad, frameY = pad, frameW = W-pad*2, frameH = H-pad*2;
+  const grad = ctx.createLinearGradient(frameX, frameY, frameX+frameW, frameY);
+  grad.addColorStop(0, "#14F195");
+  grad.addColorStop(0.5, "#00D1FF");
+  grad.addColorStop(1, "#9945FF");
+
+  drawRoundedRect(ctx, frameX, frameY, frameW, frameH, 60);
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 16;
+  ctx.stroke();
+
+  // inner card
+  const innerPad = 22;
+  const ix = frameX+innerPad, iy = frameY+innerPad, iw = frameW-innerPad*2, ih = frameH-innerPad*2;
+  drawRoundedRect(ctx, ix, iy, iw, ih, 46);
+  ctx.fillStyle = "rgba(255,255,255,.06)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.10)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // header bar
+  const hx = ix+26, hy = iy+26, hw = iw-52, hh = 130;
+  drawRoundedRect(ctx, hx, hy, hw, hh, 30);
+  ctx.fillStyle = "rgba(0,0,0,.20)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.10)";
+  ctx.stroke();
+
+  // Title left
+  ctx.font = "900 58px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.fillText("SOLANA", hx+30, hy+82);
+
+  // Right value badge (Status)
+  const status = (data.status || "—").toUpperCase();
+  const stW = 360, stH = 72;
+  const stX = hx+hw-stW-24, stY = hy+30;
+  drawRoundedRect(ctx, stX, stY, stW, stH, 24);
+
+  const stGrad = ctx.createLinearGradient(stX, stY, stX+stW, stY);
+  if(status.includes("PROTECTED")){
+    stGrad.addColorStop(0, "rgba(20,241,149,.95)");
+    stGrad.addColorStop(1, "rgba(0,209,255,.95)");
+    ctx.fillStyle = stGrad;
+    ctx.fill();
+    ctx.fillStyle = "#061012";
+  } else if(status.includes("UNPROTECTED")){
+    stGrad.addColorStop(0, "rgba(255,80,120,.95)");
+    stGrad.addColorStop(1, "rgba(153,69,255,.95)");
+    ctx.fillStyle = stGrad;
+    ctx.fill();
+    ctx.fillStyle = "rgba(6,16,18,.95)";
+  } else {
+    ctx.fillStyle = "rgba(255,255,255,.07)";
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,.88)";
+  }
+
+  ctx.font = "950 30px ui-sans-serif, system-ui, Segoe UI, Arial";
+  const stText = status.replace("STATUS:", "").trim();
+  ctx.fillText(stText, stX+24, stY+48);
+
+  // subheader line
+  ctx.font = "800 22px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.70)";
+  ctx.fillText("Solana On Solana  •  GENESIS  •  META/CYBER/SOLANA", hx+32, hy+120);
+
+  // main art panel
+  const ax = ix+26, ay = hy+hh+22, aw = iw-52, ah = 860;
+  drawRoundedRect(ctx, ax, ay, aw, ah, 44);
+  ctx.fillStyle = "rgba(0,0,0,.22)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.10)";
+  ctx.stroke();
+
+  // watermark logo big
+  if(logoImg){
+    ctx.save();
+    ctx.globalAlpha = 0.10;
+    const scale = Math.min(aw/ (logoImg.width*0.9), ah/(logoImg.height*0.9));
+    const lw = logoImg.width*scale, lh = logoImg.height*scale;
+    ctx.drawImage(logoImg, ax + (aw-lw)/2, ay + (ah-lh)/2 - 40, lw, lh);
+    ctx.restore();
+  }
+
+  // "Guardian aura" overlay
+  ctx.save();
+  ctx.globalAlpha = 0.22;
+  const aura = ctx.createRadialGradient(ax+aw*0.62, ay+ah*0.40, 10, ax+aw*0.62, ay+ah*0.40, aw*0.75);
+  if(status.includes("PROTECTED")){
+    aura.addColorStop(0, "rgba(20,241,149,.40)");
+    aura.addColorStop(0.55, "rgba(0,209,255,.18)");
+    aura.addColorStop(1, "rgba(0,0,0,0)");
+  } else if(status.includes("UNPROTECTED")){
+    aura.addColorStop(0, "rgba(255,80,120,.38)");
+    aura.addColorStop(0.60, "rgba(153,69,255,.18)");
+    aura.addColorStop(1, "rgba(0,0,0,0)");
+  } else {
+    aura.addColorStop(0, "rgba(255,255,255,.18)");
+    aura.addColorStop(1, "rgba(0,0,0,0)");
+  }
+  ctx.fillStyle = aura;
+  ctx.fillRect(ax, ay, aw, ah);
+  ctx.restore();
+
+  // "character silhouette" placeholder (stylized) — replace later with your sticker.png if you want
+  ctx.save();
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = "rgba(255,255,255,.55)";
+  // simple geometric figure
+  drawRoundedRect(ctx, ax+aw*0.12, ay+ah*0.24, aw*0.30, ah*0.52, 60);
+  ctx.fill();
+  ctx.restore();
+
+  // ability bar
+  const bx = ax, by = ay+ah+22, bw = aw, bh = 92;
+  drawRoundedRect(ctx, bx, by, bw, bh, 30);
+  ctx.fillStyle = "rgba(0,0,0,.20)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.10)";
+  ctx.stroke();
+
+  // ability title gradient text
+  const lvl = (data.level?.name || "—").toUpperCase();
+  const risk = (data.risk || "—").toUpperCase();
+  const hold = data.balance ?? 0;
+
+  ctx.font = "900 30px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.88)";
+  ctx.fillText("Ability  ▲  Proof of Protection", bx+26, by+58);
+
+  // stats box area
+  const sx = ix+26, sy = by+bh+18, sw = iw-52, sh = ih - (sy-iy) - 26;
+  drawRoundedRect(ctx, sx, sy, sw, sh, 40);
+  ctx.fillStyle = "rgba(0,0,0,.18)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.10)";
+  ctx.stroke();
+
+  // Left stats
+  const lineX = sx+28, lineY = sy+52;
+
+  ctx.font = "800 22px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.74)";
+  ctx.fillText("Wallet", lineX, lineY);
+  ctx.fillText("Holding", lineX, lineY+70);
+  ctx.fillText("Guardian Level", lineX, lineY+140);
+  ctx.fillText("Jeeter Risk", lineX, lineY+210);
+
+  ctx.font = "950 28px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.fillText(shortWallet(data.wallet), lineX+220, lineY);
+  ctx.fillText(formatNumber(Math.floor(hold)) + " SOS", lineX+220, lineY+70);
+  ctx.fillText(lvl, lineX+220, lineY+140);
+  ctx.fillText(risk, lineX+220, lineY+210);
+
+  // Right side: "Power" number derived from holding (pure meme, but deterministic)
+  const power = Math.min(999, Math.max(10, Math.floor(Math.log10((hold||1)+1)*220)));
+  const px = sx+sw-340, py = sy+42;
+  ctx.font = "900 22px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.70)";
+  ctx.fillText("POWER", px, py);
+  ctx.font = "1000 86px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.fillText(String(power), px, py+92);
+
+  // footer text
+  ctx.font = "750 20px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.62)";
+  const ts = data.timestamp ? new Date(data.timestamp) : new Date();
+  const tsText = ts.toISOString().replace("T"," ").slice(0,19) + " UTC";
+  ctx.fillText("Built for Solana culture. Generated from public on-chain data.", sx+28, sy+sh-54);
+  ctx.fillText("SET: SOS-GENESIS • " + tsText, sx+28, sy+sh-24);
+
+  // corner logo badge
+  if(logoImg){
+    const bw2 = 86, bh2 = 86;
+    const cx = sx+sw-bw2-28, cy = sy+sh-bh2-28;
+    drawRoundedRect(ctx, cx, cy, bw2, bh2, 24);
+    ctx.fillStyle = "rgba(255,255,255,.08)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.10)";
+    ctx.stroke();
+    ctx.save();
+    ctx.globalAlpha = 0.95;
+    const scale = Math.min((bw2-22)/logoImg.width, (bh2-22)/logoImg.height);
+    const lw = logoImg.width*scale, lh = logoImg.height*scale;
+    ctx.drawImage(logoImg, cx+(bw2-lw)/2, cy+(bh2-lh)/2, lw, lh);
+    ctx.restore();
+  }
+}
+
+/** =========================
+ *  Actions
+ *  ========================= */
+function setButtonsReady(ready){
+  $("btnDownload").disabled = !ready;
+  const share = $("btnShare");
+  if(ready){
+    share.style.opacity = "1";
+    share.style.pointerEvents = "auto";
+    share.setAttribute("aria-disabled","false");
+  } else {
+    share.style.opacity = ".55";
+    share.style.pointerEvents = "none";
+    share.setAttribute("aria-disabled","true");
+  }
+}
+
+function makeXShareUrl({walletShort, balance, status, level}){
+  const base = window.location.href;
+  const text =
+`🛡 ${status} by $SOS
+Guardian Level: ${level}
+Holding: ${formatNumber(Math.floor(balance))} SOS
+Wallet: ${walletShort}
+
+Generate yours: ${base}`;
+  const u = new URL("https://x.com/intent/tweet");
+  u.searchParams.set("text", text);
+  return u.toString();
+}
+
+async function generate(){
+  const w = $("wallet").value.trim();
+
+  if(SOS_MINT.includes("PUT_YOUR") || SOS_MINT.length < 30){
+    toast("Du musst zuerst SOS_MINT im Code setzen (Mint Address).", "bad");
+    return;
+  }
+  if(!looksLikeBase58(w)){
+    toast("Ungültige Wallet-Adresse (Base58).", "bad");
+    return;
+  }
+
+  setButtonsReady(false);
+  $("uiStatus").textContent = "…";
+  $("uiHolding").textContent = "…";
+  $("uiLevel").textContent  = "…";
+  $("uiWallet").textContent = shortWallet(w);
+
+  toast("Reading on-chain data…", "info");
+
+  try{
+    const { amount } = await getSplBalance(w, SOS_MINT);
+    const status = amount > 0 ? "PROTECTED" : "UNPROTECTED";
+    const level = guardianLevel(amount);
+    const risk  = jeeterRisk(amount);
+
+    $("uiStatus").textContent = status;
+    $("uiHolding").textContent = formatNumber(Math.floor(amount)) + " SOS";
+    $("uiLevel").textContent = level.name;
+
+    drawCard({
+      wallet: w,
+      balance: amount,
+      status,
+      level,
+      risk,
+      timestamp: new Date()
+    });
+
+    // setup download/share
+    const shareUrl = makeXShareUrl({
+      walletShort: shortWallet(w),
+      balance: amount,
+      status,
+      level: level.name
+    });
+    $("btnShare").href = shareUrl;
+
+    setButtonsReady(true);
+    toast("Card generated ✅", "ok");
+  } catch(err){
+    console.error(err);
+    toast("Fehler beim Laden: " + (err?.message || "unknown"), "bad");
+  }
+}
+
+$("btnGenerate").addEventListener("click", generate);
+$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") generate(); });
+
+$("btnDownload").addEventListener("click", ()=>{
+  const c = $("card");
+  c.toBlob((blob)=>{
+    if(!blob){ toast("Export failed.", "bad"); return; }
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = "sos-guardian-card.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast("Downloaded ✅", "ok");
+  }, "image/png");
+});
+</script>
+</body>
+</html>
