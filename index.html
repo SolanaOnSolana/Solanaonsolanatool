@@ -564,7 +564,10 @@ async function heliusGET(path, params){
 }
 
 async function getRecentTx(wallet, limit=140){
-  return heliusGET(`/v0/addresses/${wallet}/transactions`, { limit });
+  // Helius endpoint doesn't accept "limit" as query param in some deployments.
+  // Fetch default window, then cut locally.
+  const data = await heliusGET(`/v0/addresses/${wallet}/transactions`);
+  return Array.isArray(data) ? data.slice(0, limit) : data;
 }
 
 // ---------- RPC fallback (Helius RPC first)
@@ -882,7 +885,7 @@ async function scan(){
   try{
     // parallel pulls
     const [txs, solLamports, sosHold] = await Promise.all([
-      getRecentTx(wallet, 140),
+      getRecentTx(wallet, 80),
       getSolBalanceLamports(wallet),
       getSplBalance(wallet, SOS_MINT)
     ]);
