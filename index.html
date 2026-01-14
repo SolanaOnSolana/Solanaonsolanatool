@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <meta name="theme-color" content="#070711" />
   <title>$SOS — Guardian Intelligence</title>
   <meta name="description" content="Guardian Intelligence — wallet DNA + $SOS alignment report." />
@@ -184,6 +184,9 @@
       outline:none;
       font-weight:900;
       letter-spacing:.2px;
+
+      /* iOS Safari zoom fix */
+      font-size:16px;
     }
     input:focus{
       border-color: rgba(0,209,255,.45);
