@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#070711" />
-  <title>$SOS — Guardian Control Center</title>
-  <meta name="description" content="$SOS Guardian Control Center — live on-chain insights." />
+  <title>$SOS — Guardian DNA Scanner</title>
+  <meta name="description" content="Guardian DNA Scanner — decode wallet behavior on-chain + $SOS alignment." />
 
   <style>
     :root{
@@ -25,6 +25,7 @@
       --shadow: 0 10px 30px rgba(0,0,0,.35);
       --max: 1120px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -45,52 +46,44 @@
         var(--bg);
       transform: translateZ(0);
     }
+
     a{color:inherit; text-decoration:none}
     .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
 
-    /* top bar */
     .topbar{
-      position: sticky; top:0; z-index:20;
+      position:sticky; top:0; z-index:20;
       backdrop-filter: blur(14px);
       background: rgba(7,7,17,.62);
       border-bottom: 1px solid rgba(255,255,255,.08);
     }
     .row{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding: 12px 0;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      padding:12px 0;
+      flex-wrap:wrap;
     }
-    .brand{display:flex; align-items:center; gap:12px; min-width:220px}
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width: 220px;
+      user-select:none;
+    }
     .brand img{
       width:40px; height:40px; object-fit:contain;
       filter: drop-shadow(0 10px 25px rgba(0,0,0,.45));
     }
     .bt{display:flex; flex-direction:column; line-height:1.05}
     .bt .t{font-weight:1000; letter-spacing:-.2px; font-size:16px}
-    .bt .s{font-weight:800; color:var(--muted); font-size:12.5px}
+    .bt .s{font-weight:850; color:var(--muted); font-size:12.5px}
 
-    .tabs{display:flex; gap:10px; flex:1; justify-content:center; flex-wrap:wrap}
-    .pill{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:9px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.86);
-      font-weight:900; font-size:13px;
-      transition:.15s ease;
-      user-select:none;
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
+    .actions{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      justify-content:flex-end;
+      width:100%;
     }
-    .pill:hover{background: rgba(255,255,255,.10); transform: translateY(-1px)}
-    .pill.active{
-      border:0;
-      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
-      color:#061012;
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    @media (min-width: 980px){
+      .actions{width:auto}
     }
 
-    .right{display:flex; align-items:center; gap:10px; min-width:260px; justify-content:flex-end; flex-wrap:wrap}
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
       padding:9px 12px;
@@ -98,35 +91,25 @@
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: rgba(255,255,255,.88);
-      font-weight:900; font-size:13px;
-      transition:.15s ease;
+      font-weight:900;
+      font-size:13px;
+      transition: .15s ease;
       user-select:none;
       cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+      white-space:nowrap;
     }
     .btn:hover{background: rgba(255,255,255,.10); transform: translateY(-1px)}
     .btn.grad{
       border:0;
       background: linear-gradient(90deg, var(--g), var(--c), var(--p));
       color:#061012;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
     }
     .btn[disabled]{opacity:.55; pointer-events:none}
 
-    /* layout */
     main{padding:22px 0 42px}
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:16px;
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .row{flex-wrap:wrap}
-      .tabs{order:3; width:100%; justify-content:flex-start}
-      .right{order:2; width:100%; justify-content:flex-start}
-      .grid{grid-template-columns:1fr}
-    }
 
-    /* cards */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05));
       border: 1px solid rgba(255,255,255,.10);
@@ -134,96 +117,70 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .inner{padding:20px}
+    .inner{padding:22px}
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      isolation:isolate;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-60px -40px;
+      background: radial-gradient(900px 520px at 20% 30%, rgba(20,241,149,.16), transparent 60%),
+                  radial-gradient(900px 520px at 80% 20%, rgba(0,209,255,.12), transparent 60%),
+                  radial-gradient(900px 520px at 70% 80%, rgba(153,69,255,.14), transparent 60%);
+      z-index:0;
+      pointer-events:none;
+    }
+    .hero > *{position:relative; z-index:1}
+
     .h1{
       margin:0;
       font-weight:1000;
       letter-spacing:-1px;
       line-height:1.05;
-      font-size: clamp(34px, 4.6vw, 56px);
+      font-size: clamp(36px, 4.8vw, 62px);
     }
     .gradText{
       background: linear-gradient(90deg, var(--g), var(--c), var(--p));
       -webkit-background-clip:text; background-clip:text; color:transparent;
     }
-    .sub{margin-top:8px; color:rgba(255,255,255,.74); font-weight:750}
+    .sub{
+      margin-top:10px;
+      color: rgba(255,255,255,.76);
+      font-weight:800;
+      max-width: 860px;
+    }
 
-    .kpiGrid{
+    .split{
       display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:12px;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
       margin-top:16px;
+      align-items:start;
     }
-    @media (max-width:980px){ .kpiGrid{grid-template-columns: repeat(2,1fr)} }
-    .kpi{
-      padding:14px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-    }
-    .kpi .k{color: rgba(255,255,255,.70); font-weight:850; font-size:12px; letter-spacing:.45px; text-transform:uppercase}
-    .kpi .v{margin-top:8px; font-weight:1000; font-size:20px}
-    .kpi .mini{margin-top:6px; font-weight:800; font-size:12px; color: rgba(255,255,255,.62)}
-
-    .sectionTitle{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; margin-top:16px;
-    }
-    .sectionTitle h2{
-      margin:0;
-      font-size:18px;
-      font-weight:1000;
-      letter-spacing:-.2px;
+    @media (max-width: 980px){
+      .split{grid-template-columns:1fr}
     }
 
-    .table{
-      margin-top:12px;
+    .panel{
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.18);
       border-radius: 18px;
-      overflow:hidden;
+      padding:16px;
     }
-    .tr{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr .8fr;
-      gap:10px;
-      padding:12px 14px;
-      border-top:1px solid rgba(255,255,255,.08);
-      align-items:center;
-    }
-    .tr.head{
-      border-top:0;
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.72);
-      font-weight:900;
-      font-size:12px;
-      letter-spacing:.4px;
-      text-transform:uppercase;
-    }
-    .addr{
-      font-family: ui-monospace, Menlo, Consolas, monospace;
-      font-weight:850;
-      color: rgba(255,255,255,.86);
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-    .muted{color: rgba(255,255,255,.70); font-weight:800}
-    .badge{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      font-weight:900;
-      font-size:12px;
-      white-space:nowrap;
-    }
-    .badge.good{border:0; background: linear-gradient(90deg,var(--g),var(--c),var(--p)); color:#061012}
-    .badge.warn{border-color: rgba(255,220,130,.35); background: rgba(255,220,130,.08); color: rgba(255,240,210,.92)}
-    .badge.bad{border-color: rgba(255,120,150,.35); background: rgba(255,120,150,.10); color: rgba(255,190,205,.95)}
 
-    /* wallet */
-    .field{margin-top:14px}
-    label{display:block; font-weight:950; font-size:12.5px; letter-spacing:.35px; color: rgba(255,255,255,.80); margin-bottom:8px}
+    .field{margin-top:12px}
+    label{
+      display:block;
+      font-weight:950;
+      font-size:12.5px;
+      letter-spacing:.35px;
+      color: rgba(255,255,255,.80);
+      margin-bottom:8px
+    }
     input{
       width:100%;
       padding:14px 14px;
@@ -232,28 +189,106 @@
       background: rgba(0,0,0,.22);
       color: rgba(255,255,255,.92);
       outline:none;
-      font-weight:800;
+      font-weight:850;
       letter-spacing:.2px;
     }
     input:focus{
       border-color: rgba(0,209,255,.45);
       box-shadow: 0 0 0 3px rgba(0,209,255,.12);
     }
-    .walletGrid{
+
+    .kpiGrid{
       display:grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap:12px;
-      margin-top:14px;
+      margin-top:12px;
     }
-    @media (max-width:520px){ .walletGrid{grid-template-columns:1fr} }
+    @media (max-width: 980px){ .kpiGrid{grid-template-columns: repeat(2,1fr)} }
+    @media (max-width: 520px){ .kpiGrid{grid-template-columns: 1fr} }
+
+    .kpi{
+      padding:14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+    .kpi .k{color: rgba(255,255,255,.70); font-weight:850; font-size:12px; letter-spacing:.45px; text-transform:uppercase}
+    .kpi .v{margin-top:8px; font-weight:1000; font-size:20px}
+    .kpi .mini{margin-top:6px; font-weight:800; font-size:12px; color: rgba(255,255,255,.62)}
+
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-weight:950;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .badge.good{border:0; background: linear-gradient(90deg,var(--g),var(--c),var(--p)); color:#061012}
+    .badge.warn{border-color: rgba(255,220,130,.35); background: rgba(255,220,130,.08); color: rgba(255,240,210,.92)}
+    .badge.bad{border-color: rgba(255,120,150,.35); background: rgba(255,120,150,.10); color: rgba(255,190,205,.95)}
+
+    .dnaCard{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.12));
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .dnaCard::before{
+      content:"";
+      position:absolute; inset:-40px;
+      background:
+        radial-gradient(800px 420px at 15% 25%, rgba(20,241,149,.14), transparent 60%),
+        radial-gradient(800px 420px at 85% 20%, rgba(0,209,255,.10), transparent 60%),
+        radial-gradient(800px 420px at 70% 85%, rgba(153,69,255,.12), transparent 60%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .dnaCard > *{position:relative; z-index:1}
+
+    .bigVerdict{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex-wrap:wrap;
+    }
+    .bigVerdict .title{
+      font-weight:1000;
+      letter-spacing:-.5px;
+      font-size:22px;
+    }
+    .mono{
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-weight:850;
+      color: rgba(255,255,255,.86);
+    }
+
+    .bar{
+      margin-top:10px;
+      height:12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--g), var(--c), var(--p));
+      border-radius:999px;
+      transition: width .25s ease;
+    }
 
     .statusLine{
       margin-top:10px;
       color: rgba(255,255,255,.70);
-      font-weight:800;
+      font-weight:850;
       min-height: 18px;
       font-size:13px;
     }
+
     footer{
       padding: 18px 0 34px;
       color: rgba(255,255,255,.45);
@@ -262,9 +297,12 @@
       font-size:12px;
     }
 
-    /* view switching */
-    .view{display:none}
-    .view.active{display:block}
+    .tiny{
+      font-size:12px;
+      color: rgba(255,255,255,.55);
+      font-weight:700;
+      margin-top:10px;
+    }
   </style>
 </head>
 
@@ -272,145 +310,106 @@
   <div class="topbar">
     <div class="wrap">
       <div class="row">
-        <div class="brand" aria-label="Home">
+        <div class="brand">
           <img id="brandLogo" src="logo.png" alt="$SOS" onerror="this.style.display='none'">
           <div class="bt">
             <div class="t">$SOS</div>
-            <div class="s">Guardian Control Center</div>
+            <div class="s">Guardian DNA Scanner</div>
           </div>
         </div>
 
-        <div class="tabs" aria-label="Tabs">
-          <div class="pill active" data-tab="overview">Overview</div>
-          <div class="pill" data-tab="wallet">Wallet Verdict</div>
-        </div>
-
-        <div class="right">
-          <button class="btn" id="btnRefresh">Refresh</button>
-          <button class="btn grad" id="btnAuto">Auto: ON</button>
+        <div class="actions">
+          <button class="btn" id="btnDemo">Load Demo Wallet</button>
+          <button class="btn" id="btnAuto">Auto: ON</button>
+          <button class="btn grad" id="btnScan">Scan DNA</button>
+          <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer"
+             style="opacity:.55; pointer-events:none;">Share on X</a>
         </div>
       </div>
     </div>
   </div>
 
   <main class="wrap">
-    <!-- OVERVIEW -->
-    <section id="view-overview" class="view active">
-      <div class="card">
-        <div class="inner">
-          <h1 class="h1"><span class="gradText">Guardian</span> System</h1>
-          <div class="sub">Live on-chain signal layer for $SOS.</div>
-
-          <div class="kpiGrid">
-            <div class="kpi">
-              <div class="k">Guardian Strength</div>
-              <div class="v" id="kStrength">—</div>
-              <div class="mini" id="kStrengthMini">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Supply</div>
-              <div class="v" id="kSupply">—</div>
-              <div class="mini" id="kDecimals">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Top Concentration</div>
-              <div class="v" id="kTop">—</div>
-              <div class="mini" id="kTopMini">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Whale Signal</div>
-              <div class="v" id="kWhale">—</div>
-              <div class="mini" id="kWhaleMini">—</div>
-            </div>
-          </div>
-
-          <div class="sectionTitle">
-            <h2>Whale Watch (Largest Accounts)</h2>
-            <span class="badge" id="lastUpdate">—</span>
-          </div>
-
-          <div class="table" role="table" aria-label="Largest accounts">
-            <div class="tr head" role="row">
-              <div>Address</div><div>Holding</div><div>Tier</div>
-            </div>
-            <div id="largestRows"></div>
-          </div>
-
-          <div class="sectionTitle" style="margin-top:14px">
-            <h2>Distribution Snapshot</h2>
-            <span class="muted" id="distNote">Based on largest accounts</span>
-          </div>
-
-          <div class="kpiGrid" style="margin-top:12px">
-            <div class="kpi">
-              <div class="k">Shrimp</div>
-              <div class="v" id="dShrimp">—</div>
-              <div class="mini">0 – 10k</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Fish</div>
-              <div class="v" id="dFish">—</div>
-              <div class="mini">10k – 100k</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Dolphin</div>
-              <div class="v" id="dDolphin">—</div>
-              <div class="mini">100k – 1M</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Whale</div>
-              <div class="v" id="dWhale">—</div>
-              <div class="mini">1M+</div>
-            </div>
-          </div>
-
-          <div class="statusLine" id="overviewStatus"></div>
+    <section class="card hero">
+      <div class="inner">
+        <h1 class="h1"><span class="gradText">Decode</span> Wallet DNA</h1>
+        <div class="sub">
+          This scanner reads public on-chain behavior and classifies a wallet’s conviction.
+          It outputs a GLOBAL DNA profile + a separate $SOS alignment verdict.
         </div>
-      </div>
-    </section>
 
-    <!-- WALLET -->
-    <section id="view-wallet" class="view">
-      <div class="card">
-        <div class="inner">
-          <h1 class="h1"><span class="gradText">Wallet</span> Verdict</h1>
-          <div class="sub">Paste a Solana wallet. We read public on-chain data only.</div>
+        <div class="split">
+          <div class="panel">
+            <div class="field">
+              <label for="wallet">Wallet Address</label>
+              <input id="wallet" placeholder="Paste Solana wallet…" autocomplete="off" spellcheck="false" />
+            </div>
 
-          <div class="field">
-            <label for="wallet">Solana Wallet Address</label>
-            <input id="wallet" placeholder="Enter wallet address…" autocomplete="off" spellcheck="false" />
+            <div class="field">
+              <label for="helius">Helius API Key</label>
+              <input id="helius" placeholder="Paste your Helius key here…" autocomplete="off" spellcheck="false" />
+              <div class="tiny">Tip: rotate your key if you posted it anywhere.</div>
+            </div>
+
+            <div class="field">
+              <label for="mint">$SOS Mint (optional — set later)</label>
+              <input id="mint" placeholder="Paste $SOS mint (or leave default test mint)…" autocomplete="off" spellcheck="false" />
+              <div class="tiny">Default is a temporary test mint. Replace when your real mint is ready.</div>
+            </div>
+
+            <div class="statusLine" id="status">—</div>
           </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
-            <button class="btn grad" id="btnCheck">Run Verdict</button>
-            <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer"
-               style="opacity:.55; pointer-events:none;">Share on X</a>
-          </div>
+          <div class="dnaCard">
+            <div class="bigVerdict">
+              <div>
+                <div class="title" id="arch">—</div>
+                <div class="tiny mono" id="walletShort">—</div>
+              </div>
+              <span class="badge" id="verdictBadge">—</span>
+            </div>
 
-          <div class="walletGrid">
-            <div class="kpi">
-              <div class="k">Verdict</div>
-              <div class="v" id="wVerdict">—</div>
-              <div class="mini" id="wVerdictMini">—</div>
+            <div class="kpiGrid">
+              <div class="kpi">
+                <div class="k">Conviction</div>
+                <div class="v" id="sConv">—</div>
+                <div class="mini" id="mConv">—</div>
+                <div class="bar"><div id="bConv"></div></div>
+              </div>
+              <div class="kpi">
+                <div class="k">Jeeter Risk</div>
+                <div class="v" id="sJeet">—</div>
+                <div class="mini" id="mJeet">—</div>
+                <div class="bar"><div id="bJeet"></div></div>
+              </div>
+              <div class="kpi">
+                <div class="k">Heat</div>
+                <div class="v" id="sHeat">—</div>
+                <div class="mini" id="mHeat">—</div>
+                <div class="bar"><div id="bHeat"></div></div>
+              </div>
+              <div class="kpi">
+                <div class="k">Discipline</div>
+                <div class="v" id="sDisc">—</div>
+                <div class="mini" id="mDisc">—</div>
+                <div class="bar"><div id="bDisc"></div></div>
+              </div>
+              <div class="kpi">
+                <div class="k">Token Diversity</div>
+                <div class="v" id="sDiv">—</div>
+                <div class="mini" id="mDiv">—</div>
+                <div class="bar"><div id="bDiv"></div></div>
+              </div>
+              <div class="kpi">
+                <div class="k">$SOS Alignment</div>
+                <div class="v" id="sSOS">—</div>
+                <div class="mini" id="mSOS">—</div>
+                <div class="bar"><div id="bSOS"></div></div>
+              </div>
             </div>
-            <div class="kpi">
-              <div class="k">$SOS Holding</div>
-              <div class="v" id="wHold">—</div>
-              <div class="mini" id="wHoldMini">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Guardian Level</div>
-              <div class="v" id="wLevel">—</div>
-              <div class="mini" id="wLevelMini">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Status</div>
-              <div class="v" id="wStatus">—</div>
-              <div class="mini" id="wStatusMini">—</div>
-            </div>
-          </div>
 
-          <div class="statusLine" id="walletStatus"></div>
+            <div class="statusLine" id="summary">—</div>
+          </div>
         </div>
       </div>
     </section>
@@ -419,88 +418,87 @@
   </main>
 
 <script>
-/** =========================
- *  CONFIG
- *  ========================= */
-const HELIUS_API_KEY = "bb447d37-3c9a-45b8-994a-163fb8a75592";
+/** ============ Defaults ============ */
+const DEFAULT_TEST_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
+const DEFAULT_DEMO_WALLET = "7Q5LrGxQ8x9pK2m8wB7u9zWQ9Vt2pG2o9m5o8Z7p1p3X"; // harmless placeholder format
 
-/* Replace this with your real $SOS mint when you have it */
-const SOS_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
-
-/* Robust RPC list: Helius first (your key), then public fallbacks */
-const RPC_URLS = [
-  `https://mainnet.helius-rpc.com/?api-key=${encodeURIComponent(HELIUS_API_KEY)}`,
-  "https://api.mainnet-beta.solana.com",
-  "https://rpc.ankr.com/solana",
-  "https://solana.drpc.org"
-];
-
-/** =========================
- *  DOM helpers
- *  ========================= */
 const $ = (id)=>document.getElementById(id);
 $("y").textContent = new Date().getFullYear();
 
-async function loadFirst(paths){
-  for(const p of paths){
-    const ok = await new Promise(res=>{
-      const img = new Image();
-      img.onload = ()=>res(img);
-      img.onerror = ()=>res(null);
-      img.src = p;
-    });
-    if(ok) return ok.src;
-  }
-  return null;
-}
+/** logo load (root or /assets) */
 (async ()=>{
-  const src = await loadFirst(["logo.png","assets/logo.png"]);
-  if(src){
-    const el = $("brandLogo");
-    el.src = src;
-    el.style.display = "";
-  }
+  const el = $("brandLogo");
+  const trySrc = async (src)=> new Promise(res=>{
+    const img = new Image();
+    img.onload = ()=>res(src);
+    img.onerror = ()=>res(null);
+    img.src = src;
+  });
+  const src = await trySrc("logo.png") || await trySrc("assets/logo.png");
+  if(src){ el.src = src; el.style.display=""; } else { el.style.display="none"; }
 })();
+
+function looksBase58(s){
+  return typeof s === "string"
+    && s.length >= 32 && s.length <= 52
+    && /^[1-9A-HJ-NP-Za-km-z]+$/.test(s);
+}
+function shortAddr(a){ return a ? (a.slice(0,4)+"…"+a.slice(-4)) : "—"; }
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function pctBar(el, val){ el.style.width = clamp(val,0,100) + "%"; }
+function setBadge(el, txt, mode){
+  el.textContent = txt;
+  el.classList.remove("good","warn","bad");
+  if(mode) el.classList.add(mode);
+}
 
 function fmt(n){
   if(n === null || n === undefined || Number.isNaN(n)) return "—";
   try { return new Intl.NumberFormat("en-US").format(n); } catch { return String(n); }
 }
-function pct(n){ return (Math.round(n*1000)/10).toFixed(1) + "%"; }
-function shortAddr(a){
-  if(!a) return "—";
-  return a.slice(0,4) + "…" + a.slice(-4);
-}
-function looksBase58(s){
-  return typeof s === "string"
-    && s.length >= 32
-    && s.length <= 52
-    && /^[1-9A-HJ-NP-Za-km-z]+$/.test(s);
+
+/** ============ Helius calls ============ */
+async function heliusFetch(apiKey, path, params){
+  const u = new URL(`https://api.helius.xyz${path}`);
+  u.searchParams.set("api-key", apiKey);
+  if(params){
+    for(const [k,v] of Object.entries(params)){
+      if(v !== undefined && v !== null) u.searchParams.set(k, String(v));
+    }
+  }
+  const res = await fetch(u.toString(), { method:"GET" });
+  if(!res.ok){
+    const txt = await res.text().catch(()=> "");
+    throw new Error(`Helius HTTP ${res.status} ${txt}`.slice(0,180));
+  }
+  return res.json();
 }
 
-/** =========================
- *  Tabs
- *  ========================= */
-document.querySelectorAll(".pill").forEach(p=>{
-  p.addEventListener("click", ()=>{
-    document.querySelectorAll(".pill").forEach(x=>x.classList.remove("active"));
-    p.classList.add("active");
-    const tab = p.getAttribute("data-tab");
-    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-    $("view-" + tab).classList.add("active");
-  });
-});
+/**
+ * Enhanced transactions for a wallet (recent window).
+ * Endpoint: /v0/addresses/{address}/transactions
+ * Note: Helius supports this. Free tier usually allows limited volume.
+ */
+async function getRecentTx(apiKey, wallet, limit=120){
+  return heliusFetch(apiKey, `/v0/addresses/${wallet}/transactions`, { limit });
+}
 
-/** =========================
- *  RPC (robust)
- *  ========================= */
+/** Minimal RPC fallback list (only for token balance) */
+function rpcUrls(apiKey){
+  return [
+    `https://mainnet.helius-rpc.com/?api-key=${encodeURIComponent(apiKey)}`,
+    "https://api.mainnet-beta.solana.com",
+    "https://rpc.ankr.com/solana",
+    "https://solana.drpc.org"
+  ];
+}
 let _rpcIndex = 0;
-
-async function rpc(method, params){
+async function rpc(apiKey, method, params){
+  const urls = rpcUrls(apiKey);
   const body = JSON.stringify({ jsonrpc:"2.0", id:1, method, params });
 
-  for(let attempt=0; attempt<RPC_URLS.length; attempt++){
-    const url = RPC_URLS[_rpcIndex % RPC_URLS.length];
+  for(let attempt=0; attempt<urls.length; attempt++){
+    const url = urls[_rpcIndex % urls.length];
     const controller = new AbortController();
     const t = setTimeout(()=>controller.abort(), 12000);
 
@@ -516,45 +514,28 @@ async function rpc(method, params){
       if(res.status === 429) throw new Error("Rate limited (429)");
       if(!res.ok){
         const txt = await res.text().catch(()=> "");
-        throw new Error(`HTTP ${res.status} ${txt}`.slice(0,160));
+        throw new Error(`RPC HTTP ${res.status} ${txt}`.slice(0,160));
       }
       const j = await res.json();
       if(j.error) throw new Error(j.error.message || "RPC error");
       return j.result;
+
     }catch(e){
       clearTimeout(t);
       _rpcIndex++;
-      if(attempt === RPC_URLS.length - 1) throw e;
+      if(attempt === urls.length - 1) throw e;
     }
   }
 }
 
-/** =========================
- *  On-chain readers
- *  ========================= */
-async function getTokenSupply(mint){
-  const r = await rpc("getTokenSupply", [mint]);
-  const ui = Number(r?.value?.uiAmount ?? 0);
-  const decimals = Number(r?.value?.decimals ?? 0);
-  const raw = r?.value?.amount ? BigInt(r.value.amount) : 0n;
-  return { ui, decimals, raw };
-}
-
-async function getLargestAccounts(mint){
-  const r = await rpc("getTokenLargestAccounts", [mint]);
-  // entries: { address, amount, decimals, uiAmountString }
-  return r?.value || [];
-}
-
-async function getSplBalance(owner, mint){
-  const r = await rpc("getTokenAccountsByOwner", [
+async function getSplBalance(apiKey, owner, mint){
+  const r = await rpc(apiKey, "getTokenAccountsByOwner", [
     owner,
     { mint },
     { encoding:"jsonParsed" }
   ]);
   const arr = r?.value || [];
   if(arr.length === 0) return 0;
-
   let total = 0;
   for(const it of arr){
     const ta = it?.account?.data?.parsed?.info?.tokenAmount;
@@ -563,247 +544,140 @@ async function getSplBalance(owner, mint){
   return total;
 }
 
-/** =========================
- *  Guardian logic (bullish framing)
- *  ========================= */
-function tierFromHolding(x){
-  if(x >= 1_000_000) return {t:"WHALE", cls:"good"};
-  if(x >= 100_000)   return {t:"DOLPHIN", cls:"badge"};
-  if(x >= 10_000)    return {t:"FISH", cls:"badge"};
-  if(x > 0)          return {t:"SHRIMP", cls:"badge"};
-  return {t:"VOID", cls:"bad"};
-}
-function levelFromHolding(x){
-  if(x >= 10_000_000) return "GUARDIAN";
-  if(x >= 1_000_000)  return "PROTECTOR";
-  if(x >= 100_000)    return "SENTINEL";
-  if(x > 0)           return "WATCHER";
-  return "UNBOUND";
-}
-function verdictFromHolding(x){
-  if(x >= 1_000_000) return {v:"APPROVED", mini:"Diamond hands detected." , badge:"good"};
-  if(x >= 100_000)   return {v:"APPROVED", mini:"Protected by the Guardian.", badge:"good"};
-  if(x > 0)          return {v:"OBSERVED", mini:"Holding — stay steady.", badge:"warn"};
-  return {v:"REJECTED", mini:"No $SOS detected.", badge:"bad"};
-}
+/** ============ DNA Heuristics (Hype-grade) ============ */
+/**
+ * We extract high-signal features from recent enhanced tx:
+ * - activity rate (tx count)
+ * - swap ratio (presence of swap-like sources)
+ * - diversity (unique token mints touched)
+ * - hold discipline proxy (fewer quick in/out patterns)
+ * - jeeter risk proxy (high swap ratio + high diversity + low discipline)
+ *
+ * This is intentionally "signal-first": it produces a fun, shareable classification.
+ */
+function analyzeDNA(txs){
+  const N = txs.length || 0;
+  if(N === 0){
+    return {
+      conviction: 10, jeeter: 90, heat: 5, discipline: 10, diversity: 5,
+      archetype: "UNREADABLE PROFILE",
+      verdict: {label:"OBSERVED", badge:"warn"},
+      summary: "No readable recent activity window."
+    };
+  }
 
-/* Guardian Strength Index:
-   - based on concentration + whale stability signal
-   - uses largest accounts share of supply as proxy
-*/
-function strengthIndex({top10Share, top20Share}){
-  // More distributed (lower share) => stronger social base
-  // We map to 0..100 with a simple curve.
-  const conc = Math.min(0.95, Math.max(0.05, top20Share));
-  const score = Math.round((1 - conc) * 120); // typical 10..90 range
-  const clamped = Math.max(5, Math.min(95, score));
+  // features
+  let swapish = 0;
+  let sources = new Map();
+  let mints = new Set();
+  let transferCount = 0;
 
-  if(clamped >= 80) return {label:"ASCENDING", mini:"Distribution looks strong.", badge:"good"};
-  if(clamped >= 60) return {label:"STRONG", mini:"Guardian presence is firm.", badge:"good"};
-  if(clamped >= 40) return {label:"STABLE", mini:"Holding line looks steady.", badge:"warn"};
-  return {label:"WEAK", mini:"Concentration risk detected.", badge:"bad"};
-}
+  // A light “in/out” proxy: count txs where both tokenTransfers in & out exist.
+  // This indicates frequent rotation.
+  let inOut = 0;
 
-/** =========================
- *  Overview refresh
- *  ========================= */
-let lastLargestSnapshot = null; // for whale signal deltas
+  for(const tx of txs){
+    const src = (tx.source || "UNKNOWN").toString().toUpperCase();
+    sources.set(src, (sources.get(src)||0) + 1);
 
-function setBadge(el, text, cls){
-  el.textContent = text;
-  el.classList.remove("good","warn","bad");
-  if(cls) el.classList.add(cls);
-}
+    // many enhanced tx contain tokenTransfers array
+    const tt = Array.isArray(tx.tokenTransfers) ? tx.tokenTransfers : [];
+    if(tt.length) transferCount += tt.length;
 
-function clearOverview(){
-  $("overviewStatus").textContent = "";
-  $("largestRows").innerHTML = "";
-}
+    const hasIn = tt.some(t => t.toUserAccount);
+    const hasOut = tt.some(t => t.fromUserAccount);
+    if(hasIn && hasOut) inOut++;
 
-async function refreshOverview(){
-  clearOverview();
-  $("overviewStatus").textContent = "Refreshing…";
-
-  try{
-    const supply = await getTokenSupply(SOS_MINT);
-    const largest = await getLargestAccounts(SOS_MINT);
-
-    const totalUi = supply.ui || 0;
-    const top10 = largest.slice(0,10);
-    const top20 = largest.slice(0,20);
-
-    const sumTop10 = top10.reduce((a,x)=>a + Number(x.uiAmountString || 0), 0);
-    const sumTop20 = top20.reduce((a,x)=>a + Number(x.uiAmountString || 0), 0);
-
-    const top10Share = totalUi > 0 ? (sumTop10 / totalUi) : 0;
-    const top20Share = totalUi > 0 ? (sumTop20 / totalUi) : 0;
-
-    // Guardian strength
-    const s = strengthIndex({top10Share, top20Share});
-    $("kStrength").textContent = s.label;
-    $("kStrengthMini").textContent = s.mini;
-
-    // Supply
-    $("kSupply").textContent = fmt(Math.floor(totalUi));
-    $("kDecimals").textContent = `Decimals: ${supply.decimals}`;
-
-    // Concentration
-    $("kTop").textContent = `Top10 ${pct(top10Share)}`;
-    $("kTopMini").textContent = `Top20 ${pct(top20Share)}`;
-
-    // Whale signal: compare top10 holdings change from last snapshot
-    let whaleMini = "No prior snapshot.";
-    let whaleLabel = "—";
-    let whaleCls = "badge";
-
-    if(lastLargestSnapshot){
-      const prev = lastLargestSnapshot; // Map addr -> amount
-      let deltaAbs = 0;
-      for(const a of top10){
-        const addr = a.address;
-        const now = Number(a.uiAmountString || 0);
-        const before = prev.get(addr) || 0;
-        deltaAbs += Math.abs(now - before);
-      }
-      const deltaPct = totalUi > 0 ? (deltaAbs / totalUi) : 0;
-      // thresholding
-      if(deltaPct < 0.001){
-        whaleLabel = "CALM";
-        whaleMini = "Top holders barely moved.";
-        whaleCls = "good";
-      } else if(deltaPct < 0.005){
-        whaleLabel = "ACTIVE";
-        whaleMini = "Whales are repositioning.";
-        whaleCls = "warn";
-      } else {
-        whaleLabel = "VOLATILE";
-        whaleMini = "Large balance shifts detected.";
-        whaleCls = "bad";
-      }
+    // collect mints touched
+    for(const t of tt){
+      if(t.mint) mints.add(t.mint);
     }
-    $("kWhale").textContent = whaleLabel;
-    $("kWhaleMini").textContent = whaleMini;
 
-    // update snapshot map
-    lastLargestSnapshot = new Map(largest.map(x=>[x.address, Number(x.uiAmountString || 0)]));
-
-    // table rows
-    const frag = document.createDocumentFragment();
-    const show = largest.slice(0,12);
-    let shrimp=0, fish=0, dolphin=0, whale=0;
-
-    for(const it of show){
-      const addr = it.address;
-      const holding = Number(it.uiAmountString || 0);
-      const tier = tierFromHolding(holding);
-      if(holding >= 1_000_000) whale++;
-      else if(holding >= 100_000) dolphin++;
-      else if(holding >= 10_000) fish++;
-      else if(holding > 0) shrimp++;
-
-      const row = document.createElement("div");
-      row.className = "tr";
-      row.innerHTML = `
-        <div class="addr" title="${addr}">${addr}</div>
-        <div class="muted">${fmt(Math.floor(holding))} SOS</div>
-        <div><span class="badge ${tier.cls === 'good' ? 'good' : (tier.t==='VOID'?'bad':'')}">${tier.t}</span></div>
-      `;
-      frag.appendChild(row);
+    // swapish sources
+    if(src.includes("JUPITER") || src.includes("RAYDIUM") || src.includes("ORCA") || src.includes("METEORA") || src.includes("SWAP")){
+      swapish++;
     }
-    $("largestRows").appendChild(frag);
-
-    // distribution snapshot (largest accounts only)
-    $("dShrimp").textContent  = fmt(shrimp);
-    $("dFish").textContent    = fmt(fish);
-    $("dDolphin").textContent = fmt(dolphin);
-    $("dWhale").textContent   = fmt(whale);
-
-    const now = new Date();
-    setBadge($("lastUpdate"), now.toLocaleTimeString(), "badge");
-
-    $("overviewStatus").textContent = `Live: ${s.label} • Top10 ${pct(top10Share)} • Top20 ${pct(top20Share)}`;
-
-  }catch(e){
-    console.error(e);
-    $("overviewStatus").textContent = "RPC error: " + (e?.message || "unknown");
-  }
-}
-
-/** =========================
- *  Wallet verdict
- *  ========================= */
-function makeShareText({verdict, holding, level, status, walletShort}){
-  return `🛡️ $SOS Guardian Verdict
-
-Verdict: ${verdict}
-Status: ${status}
-Level: ${level}
-Holding: ${fmt(Math.floor(holding))} SOS
-Wallet: ${walletShort}
-
-Guardian Control Center:
-${location.href}`;
-}
-
-async function runVerdict(){
-  const w = $("wallet").value.trim();
-  $("walletStatus").textContent = "";
-  $("btnShare").style.opacity = ".55";
-  $("btnShare").style.pointerEvents = "none";
-
-  if(!looksBase58(w)){
-    $("walletStatus").textContent = "Invalid wallet address.";
-    return;
   }
 
-  try{
-    $("walletStatus").textContent = "Scanning…";
-    const holding = await getSplBalance(w, SOS_MINT);
+  const swapRatio = swapish / Math.max(1, N);
+  const diversityRaw = mints.size;
+  const inOutRatio = inOut / Math.max(1, N);
 
-    const verdict = verdictFromHolding(holding);
-    const level = levelFromHolding(holding);
-    const status = holding > 0 ? "PROTECTED" : "UNPROTECTED";
+  // Scores (0..100)
+  const heat = clamp(Math.round(N / 1.2), 0, 100);                 // more tx => hotter
+  const diversity = clamp(Math.round(diversityRaw * 6), 0, 100);   // more mints => higher
+  const discipline = clamp(Math.round((1 - inOutRatio) * 100), 0, 100); // fewer rotations => higher discipline
 
-    $("wVerdict").textContent = verdict.v;
-    $("wVerdictMini").textContent = verdict.mini;
+  // conviction: high discipline + lower swapiness + moderate diversity
+  const conviction = clamp(
+    Math.round((discipline * 0.55) + ((1 - swapRatio) * 100 * 0.25) + (Math.max(0, 60 - diversity) * 0.20)),
+    0, 100
+  );
 
-    $("wHold").textContent = `${fmt(Math.floor(holding))} SOS`;
-    $("wHoldMini").textContent = holding > 0 ? "Holding detected." : "No tokens found.";
+  // jeeter risk: swapiness + inOut + high diversity
+  const jeeter = clamp(
+    Math.round((swapRatio * 100 * 0.45) + (inOutRatio * 100 * 0.35) + (diversity * 0.20)),
+    0, 100
+  );
 
-    $("wLevel").textContent = level;
-    $("wLevelMini").textContent = (level === "UNBOUND") ? "Earn status by holding." : "Guardian alignment confirmed.";
+  // Archetype selection (this is where the hype lives)
+  let archetype = "CHAIN WALKER";
+  if(conviction >= 78 && jeeter <= 35) archetype = "DIAMOND OPERATOR";
+  else if(conviction >= 65 && diversity <= 35) archetype = "QUIET ACCUMULATOR";
+  else if(jeeter >= 75 && diversity >= 60) archetype = "EXIT LIQUIDITY ENGINE";
+  else if(jeeter >= 68 && heat >= 60) archetype = "SWAP ADDICT";
+  else if(discipline >= 70 && heat <= 35) archetype = "SLEEPING WHALE";
+  else if(heat >= 80 && diversity <= 40) archetype = "HUNT MODE";
+  else if(diversity >= 70 && heat <= 55) archetype = "COIN NOMAD";
+  else if(discipline <= 35 && inOutRatio >= 0.35) archetype = "PANIC ROTATOR";
 
-    $("wStatus").textContent = status;
-    $("wStatusMini").textContent = status === "PROTECTED" ? "Guardian shield is active." : "No shield.";
+  // Verdict framing
+  let verdict = {label:"OBSERVED", badge:"warn"};
+  if(conviction >= 75 && jeeter <= 45) verdict = {label:"APPROVED", badge:"good"};
+  if(jeeter >= 80 && conviction <= 40) verdict = {label:"EXILED", badge:"bad"};
 
-    // share
-    const text = makeShareText({
-      verdict: verdict.v,
-      holding,
-      level,
-      status,
-      walletShort: shortAddr(w)
-    });
-    const u = new URL("https://x.com/intent/tweet");
-    u.searchParams.set("text", text);
-    $("btnShare").href = u.toString();
-    $("btnShare").style.opacity = "1";
-    $("btnShare").style.pointerEvents = "auto";
+  // Summary line (share-worthy)
+  const summary =
+    `${archetype} • Conviction ${conviction}/100 • Jeeter Risk ${jeeter}/100 • Discipline ${discipline}/100 • Diversity ${diversityRaw} mints`;
 
-    $("walletStatus").textContent = `${verdict.v} • ${status} • ${fmt(Math.floor(holding))} SOS`;
-
-  }catch(e){
-    console.error(e);
-    $("walletStatus").textContent = "RPC error: " + (e?.message || "unknown");
-  }
+  return { conviction, jeeter, heat, discipline, diversity, archetype, verdict, diversityRaw, summary };
 }
 
-$("btnCheck").addEventListener("click", runVerdict);
-$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") runVerdict(); });
+/** $SOS alignment (separate; exact) */
+function sosAlignment(holding){
+  // alignment is intentionally nonlinear for hype
+  if(holding <= 0) return {score: 0, label:"UNALIGNED", mini:"No $SOS detected.", badge:"bad", level:"UNBOUND"};
+  if(holding >= 1_000_000) return {score: 98, label:"DIAMOND", mini:"Guardian-grade conviction.", badge:"good", level:"PROTECTOR"};
+  if(holding >= 100_000)   return {score: 85, label:"PROTECTED", mini:"Aligned to the Guardian.", badge:"good", level:"SENTINEL"};
+  if(holding >= 10_000)    return {score: 62, label:"WATCHING", mini:"Holding — strengthen position.", badge:"warn", level:"WATCHER"};
+  return {score: 40, label:"FRINGE", mini:"Small position detected.", badge:"warn", level:"WATCHER"};
+}
 
-/** =========================
- *  Auto refresh
- *  ========================= */
+/** Share builder */
+function buildShareText(wallet, dna, sos){
+  const link = location.href;
+  const w = shortAddr(wallet);
+
+  const lines = [
+    `🛡️ GUARDIAN DNA SCAN — $SOS`,
+    ``,
+    `Wallet: ${w}`,
+    `Archetype: ${dna.archetype}`,
+    `Verdict: ${dna.verdict.label}`,
+    `Conviction: ${dna.conviction}/100`,
+    `Jeeter Risk: ${dna.jeeter}/100`,
+    `Discipline: ${dna.discipline}/100`,
+    `Diversity: ${dna.diversityRaw} mints`,
+    ``,
+    `$SOS Alignment: ${sos.label} (${sos.score}/100)`,
+    `Level: ${sos.level}`,
+    ``,
+    `Scan yours: ${link}`
+  ];
+  return lines.join("\n");
+}
+
+/** ============ UI wiring ============ */
 let autoOn = true;
 let timer = null;
 
@@ -813,18 +687,113 @@ function setAuto(on){
   $("btnAuto").classList.toggle("grad", on);
   if(timer){ clearInterval(timer); timer = null; }
   if(on){
-    timer = setInterval(refreshOverview, 30000);
+    timer = setInterval(()=>{ scan(true); }, 45000);
   }
 }
 
 $("btnAuto").addEventListener("click", ()=> setAuto(!autoOn));
-$("btnRefresh").addEventListener("click", refreshOverview);
-
-/** =========================
- *  Init
- *  ========================= */
 setAuto(true);
-refreshOverview();
+
+$("btnDemo").addEventListener("click", ()=>{
+  $("wallet").value = DEFAULT_DEMO_WALLET;
+  $("mint").value = DEFAULT_TEST_MINT;
+  $("status").textContent = "Demo loaded. Paste your Helius key and run scan.";
+});
+
+$("btnScan").addEventListener("click", ()=> scan(false));
+$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") scan(false); });
+
+function setShareEnabled(enabled, url){
+  const a = $("btnShare");
+  if(enabled){
+    a.href = url;
+    a.style.opacity = "1";
+    a.style.pointerEvents = "auto";
+  }else{
+    a.href = "#";
+    a.style.opacity = ".55";
+    a.style.pointerEvents = "none";
+  }
+}
+
+function putScore(idV, idM, idB, value, mini){
+  $(idV).textContent = `${value}/100`;
+  $(idM).textContent = mini;
+  pctBar($(idB), value);
+}
+
+async function scan(silent){
+  const wallet = $("wallet").value.trim();
+  const key = $("helius").value.trim();
+  const mint = ($("mint").value.trim() || DEFAULT_TEST_MINT);
+
+  setShareEnabled(false);
+
+  if(!looksBase58(wallet)){
+    $("status").textContent = "Invalid wallet address.";
+    return;
+  }
+  if(!key || key.length < 10){
+    $("status").textContent = "Paste your Helius API key.";
+    return;
+  }
+  if(!looksBase58(mint)){
+    $("status").textContent = "Mint looks invalid (or leave empty).";
+    return;
+  }
+
+  try{
+    if(!silent) $("status").textContent = "Scanning on-chain DNA…";
+    $("walletShort").textContent = shortAddr(wallet);
+
+    // 1) Global DNA from recent enhanced tx
+    const txs = await getRecentTx(key, wallet, 120);
+    const dna = analyzeDNA(Array.isArray(txs) ? txs : []);
+
+    // 2) SOS exact alignment
+    const holding = await getSplBalance(key, wallet, mint);
+    const sos = sosAlignment(holding);
+
+    // UI: archetype + verdict
+    $("arch").textContent = dna.archetype;
+    setBadge($("verdictBadge"), dna.verdict.label, dna.verdict.badge);
+
+    putScore("sConv","mConv","bConv", dna.conviction,
+      dna.conviction >= 75 ? "High conviction profile." : (dna.conviction >= 55 ? "Mixed conviction." : "Low conviction pattern.")
+    );
+    putScore("sJeet","mJeet","bJeet", 100 - dna.jeeter,
+      dna.jeeter <= 35 ? "Low jeeter tendency." : (dna.jeeter <= 60 ? "Watch behavior." : "High jeeter tendency.")
+    );
+    putScore("sHeat","mHeat","bHeat", dna.heat,
+      dna.heat >= 75 ? "Very active on-chain." : (dna.heat >= 45 ? "Active wallet." : "Low activity.")
+    );
+    putScore("sDisc","mDisc","bDisc", dna.discipline,
+      dna.discipline >= 70 ? "Strong discipline." : (dna.discipline >= 45 ? "Some rotation." : "Frequent flip behavior.")
+    );
+    putScore("sDiv","mDiv","bDiv", dna.diversity,
+      dna.diversityRaw >= 12 ? "Touches many tokens." : (dna.diversityRaw >= 6 ? "Diversified." : "Focused wallet.")
+    );
+
+    // SOS alignment score
+    $("sSOS").textContent = `${sos.score}/100`;
+    $("mSOS").textContent = `${sos.label} • ${sos.mini}`;
+    pctBar($("bSOS"), sos.score);
+
+    $("summary").textContent = dna.summary + ` • $SOS holding ${fmt(Math.floor(holding))}`;
+
+    // Share
+    const text = buildShareText(wallet, dna, sos);
+    const u = new URL("https://x.com/intent/tweet");
+    u.searchParams.set("text", text);
+    setShareEnabled(true, u.toString());
+
+    $("status").textContent = `Scan complete: ${dna.verdict.label} • ${dna.archetype} • $SOS ${sos.label}`;
+
+  }catch(e){
+    console.error(e);
+    $("status").textContent = "Error: " + (e?.message || "unknown");
+  }
+}
 </script>
 </body>
 </html>
