@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#070711" />
-  <title>$SOS — Guardian Card</title>
-  <meta name="description" content="Generate your $SOS Guardian Card from a Solana wallet." />
+  <title>$SOS — Guardian Card Generator</title>
+  <meta name="description" content="Generate your $SOS Guardian Card from your Solana wallet." />
 
   <style>
     :root{
@@ -140,13 +140,6 @@
     }
     .btn[disabled]{opacity:.55; pointer-events:none}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:16px;
-      margin-top:18px;
-    }
-
     canvas{
       width:100%;
       height:auto;
@@ -154,13 +147,15 @@
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.18);
       box-shadow: var(--shadow);
+      margin-top:18px;
     }
 
-    .tiny{
+    #statusLine{
       margin-top:10px;
-      font-size:12px;
-      color: rgba(255,255,255,.55);
-      font-weight:650;
+      font-size:13px;
+      font-weight:750;
+      color: rgba(255,255,255,.70);
+      min-height: 18px;
     }
 
     footer{
@@ -177,7 +172,7 @@
   <main class="wrap">
     <div class="topbar">
       <div class="brand">
-        <img src="assets/logo.png" alt="$SOS" onerror="this.style.display='none'">
+        <img id="brandLogo" src="logo.png" alt="$SOS" onerror="this.style.display='none'">
         <div>
           <div class="t">$SOS</div>
           <div class="s">Guardian Card Generator</div>
@@ -188,7 +183,7 @@
     <section class="card">
       <div class="inner">
         <h1 class="h1"><span class="grad">Generate</span> your Guardian Card</h1>
-        <div class="sub">Paste your Solana wallet address to mint your personalized card.</div>
+        <div class="sub">Paste your Solana wallet address to generate your personalized card.</div>
 
         <div class="field">
           <label for="wallet">Solana Wallet Address</label>
@@ -198,14 +193,12 @@
         <div class="row">
           <button class="btn primary" id="btnGenerate">Generate</button>
           <button class="btn" id="btnDownload" disabled>Download PNG</button>
-          <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer" style="opacity:.55; pointer-events:none;">Share on X</a>
+          <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer"
+             style="opacity:.55; pointer-events:none;">Share on X</a>
         </div>
 
-        <div class="grid">
-          <canvas id="card" width="1200" height="1680" aria-label="Guardian Card Preview"></canvas>
-        </div>
-
-        <div class="tiny" id="statusLine"></div>
+        <canvas id="card" width="1200" height="1680" aria-label="Guardian Card Preview"></canvas>
+        <div id="statusLine"></div>
       </div>
     </section>
 
@@ -214,18 +207,16 @@
 
 <script>
 /** =========================
- *  CONFIG
+ *  CONFIG (already set)
  *  ========================= */
-// Test mint you provided:
 const SOS_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
 
-// You can keep public RPC for now; if you ever get rate-limited, swap to a provider URL.
+// Strong RPC fallbacks (no keys needed). If one fails/rate-limits, it tries the next.
 const RPC_URLS = [
   "https://api.mainnet-beta.solana.com",
   "https://rpc.ankr.com/solana",
-  "https://solana.drpc.org",
+  "https://solana.drpc.org"
 ];
-
 
 /** =========================
  *  Helpers
@@ -244,20 +235,16 @@ function formatNumber(n){
   try { return new Intl.NumberFormat("en-US").format(n); }
   catch { return String(n); }
 }
-
-async function rpc(method, params){
-  const res = await fetch(RPC_URL, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params })
-  });
-  const j = await res.json().catch(()=>null);
-  if(!res.ok) throw new Error("RPC HTTP " + res.status);
-  if(!j) throw new Error("RPC parse error");
-  if(j.error) throw new Error(j.error.message || "RPC error");
-  return j.result;
+function setReady(ready){
+  $("btnDownload").disabled = !ready;
+  const share = $("btnShare");
+  share.style.opacity = ready ? "1" : ".55";
+  share.style.pointerEvents = ready ? "auto" : "none";
 }
 
+/** =========================
+ *  RPC (robust)
+ *  ========================= */
 let _rpcIndex = 0;
 
 async function rpc(method, params){
@@ -265,7 +252,6 @@ async function rpc(method, params){
 
   for(let attempt = 0; attempt < RPC_URLS.length; attempt++){
     const url = RPC_URLS[_rpcIndex % RPC_URLS.length];
-
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), 12000);
 
@@ -280,7 +266,6 @@ async function rpc(method, params){
       clearTimeout(t);
 
       if(res.status === 429) throw new Error("Rate limited (429)");
-
       if(!res.ok){
         const txt = await res.text().catch(()=> "");
         throw new Error(`HTTP ${res.status} ${txt}`.slice(0,180));
@@ -298,6 +283,12 @@ async function rpc(method, params){
   }
 }
 
+async function getSplBalance(owner, mint){
+  const result = await rpc("getTokenAccountsByOwner", [
+    owner,
+    { mint },
+    { encoding: "jsonParsed" }
+  ]);
 
   const value = result?.value || [];
   if(value.length === 0) return 0;
@@ -312,7 +303,8 @@ async function rpc(method, params){
 }
 
 /** =========================
- *  Assets
+ *  Assets (logo + optional art)
+ *  Tries both root and /assets paths so your setup always works.
  *  ========================= */
 async function loadImage(src){
   return new Promise((resolve)=>{
@@ -323,26 +315,45 @@ async function loadImage(src){
     img.src = src;
   });
 }
+async function loadFirst(paths){
+  for(const p of paths){
+    const img = await loadImage(p);
+    if(img) return img;
+  }
+  return null;
+}
 
 let logoImg = null;
 let artImg  = null;
 
 (async ()=>{
-  logoImg = await loadImage("assets/logo.png");
-  artImg  = await loadImage("assets/sticker.png"); // optional
+  // brand logo in UI: if logo.png missing but assets/logo.png exists, swap it
+  const uiLogo = $("brandLogo");
+  if(uiLogo){
+    const test = await loadFirst(["logo.png","assets/logo.png"]);
+    if(test){
+      uiLogo.src = test.src;
+      uiLogo.style.display = "";
+    } else {
+      uiLogo.style.display = "none";
+    }
+  }
+
+  logoImg = await loadFirst(["logo.png","assets/logo.png"]);
+  artImg  = await loadFirst(["sticker.png","assets/sticker.png"]); // optional
   drawCard({
     wallet: "—",
     balance: 0,
     status: "UNPROTECTED",
     rarity: "BROKEN",
     level: "UNBOUND",
-    power: 66,
+    power: 12,
     timestamp: new Date()
   });
 })();
 
 /** =========================
- *  Rarity + Level
+ *  Rarity + Level rules
  *  ========================= */
 function rarityFromHolding(balance){
   if(balance <= 0) return "BROKEN";
@@ -358,14 +369,15 @@ function guardianLevel(balance){
   return "UNBOUND";
 }
 function powerFromHolding(balance){
-  // deterministic, feels like a stat scale
   if(balance <= 0) return 12;
   const p = Math.floor(Math.log10(balance + 1) * 85 + 40);
   return Math.max(20, Math.min(180, p));
 }
 
 /** =========================
- *  Canvas: TCG / Pokémon-inspired (own style)
+ *  Canvas renderer (TCG / Pokémon-inspired layout)
+ *  - Own styling (Solana neon + card structure)
+ *  - Broken/Standard/Holo/Diamond differences
  *  ========================= */
 function rr(ctx,x,y,w,h,r){
   const rr = Math.min(r, w/2, h/2);
@@ -377,22 +389,19 @@ function rr(ctx,x,y,w,h,r){
   ctx.arcTo(x,y,x+w,y,rr);
   ctx.closePath();
 }
-
 function holoOverlay(ctx, x, y, w, h, intensity=0.25){
   ctx.save();
   ctx.globalAlpha = intensity;
 
-  // diagonal shimmer gradient
   const g = ctx.createLinearGradient(x, y+h, x+w, y);
   g.addColorStop(0, "rgba(20,241,149,.00)");
-  g.addColorStop(0.2, "rgba(20,241,149,.25)");
-  g.addColorStop(0.5, "rgba(0,209,255,.22)");
-  g.addColorStop(0.8, "rgba(153,69,255,.25)");
+  g.addColorStop(0.20, "rgba(20,241,149,.28)");
+  g.addColorStop(0.50, "rgba(0,209,255,.22)");
+  g.addColorStop(0.80, "rgba(153,69,255,.28)");
   g.addColorStop(1, "rgba(153,69,255,.00)");
   ctx.fillStyle = g;
   ctx.fillRect(x,y,w,h);
 
-  // subtle dot pattern
   ctx.globalAlpha = intensity * 0.55;
   ctx.fillStyle = "rgba(255,255,255,.18)";
   for(let yy=y; yy<y+h; yy+=18){
@@ -400,14 +409,12 @@ function holoOverlay(ctx, x, y, w, h, intensity=0.25){
       if(((xx+yy)/18|0)%3===0) ctx.fillRect(xx,yy,2,2);
     }
   }
-
   ctx.restore();
 }
-
 function crackOverlay(ctx, x, y, w, h){
   ctx.save();
   ctx.globalAlpha = 0.55;
-  ctx.strokeStyle = "rgba(0,0,0,.55)";
+  ctx.strokeStyle = "rgba(0,0,0,.60)";
   ctx.lineWidth = 6;
 
   const lines = [
@@ -422,7 +429,6 @@ function crackOverlay(ctx, x, y, w, h){
     ctx.stroke();
   }
 
-  // grime vignette
   const vg = ctx.createRadialGradient(x+w*0.5,y+h*0.55, w*0.1, x+w*0.5,y+h*0.55, w*0.75);
   vg.addColorStop(0, "rgba(0,0,0,0)");
   vg.addColorStop(1, "rgba(0,0,0,.55)");
@@ -439,12 +445,10 @@ function drawCard(data){
   const W = c.width, H = c.height;
 
   ctx.clearRect(0,0,W,H);
-
-  // background
   ctx.fillStyle = "#070711";
   ctx.fillRect(0,0,W,H);
 
-  // outer frame based on rarity
+  // Outer frame gradient by rarity
   const pad = 60;
   const fx = pad, fy = pad, fw = W-pad*2, fh = H-pad*2;
 
@@ -483,7 +487,7 @@ function drawCard(data){
   ctx.strokeStyle = "rgba(255,255,255,.10)";
   ctx.stroke();
 
-  // HEADER (name + HP-like stat)
+  // Header box (name + "HP-like" stat)
   const hx = ix+26, hy = iy+26, hw = iw-52, hh = 128;
   rr(ctx, hx, hy, hw, hh, 30);
   ctx.fillStyle = "rgba(0,0,0,.22)";
@@ -495,14 +499,19 @@ function drawCard(data){
   ctx.fillStyle = "rgba(255,255,255,.92)";
   ctx.fillText("SOLANA", hx+26, hy+80);
 
-  // right stat (POWER)
+  // Right stat
   ctx.font = "950 34px ui-sans-serif, system-ui, Segoe UI, Arial";
   ctx.fillStyle = "rgba(255,255,255,.78)";
   const statText = String(data.power) + " SOL";
   const m = ctx.measureText(statText).width;
   ctx.fillText(statText, hx+hw-m-64, hy+54);
 
-  // small symbol (logo)
+  // Type line
+  ctx.font = "850 20px ui-sans-serif, system-ui, Segoe UI, Arial";
+  ctx.fillStyle = "rgba(255,255,255,.70)";
+  ctx.fillText(`GENESIS  •  Solana On Solana  •  ${data.rarity}`, hx+26, hy+118);
+
+  // Small logo symbol
   if(logoImg){
     const s = 54;
     const lx = hx+hw-26-s;
@@ -511,24 +520,9 @@ function drawCard(data){
     ctx.globalAlpha = 0.95;
     ctx.drawImage(logoImg, lx, ly, s, s);
     ctx.restore();
-  } else {
-    // fallback circle symbol
-    ctx.save();
-    ctx.globalAlpha = 0.7;
-    ctx.fillStyle = "rgba(255,255,255,.18)";
-    ctx.beginPath();
-    ctx.arc(hx+hw-52, hy+hh-52, 22, 0, Math.PI*2);
-    ctx.fill();
-    ctx.restore();
   }
 
-  // type line
-  ctx.font = "850 20px ui-sans-serif, system-ui, Segoe UI, Arial";
-  ctx.fillStyle = "rgba(255,255,255,.70)";
-  const typeLine = `GENESIS  •  Solana On Solana  •  ${data.rarity}`;
-  ctx.fillText(typeLine, hx+26, hy+118);
-
-  // ART BOX
+  // Art box
   const ax = ix+26, ay = hy+hh+20, aw = iw-52, ah = 850;
   rr(ctx, ax, ay, aw, ah, 40);
   ctx.fillStyle = "rgba(0,0,0,.24)";
@@ -536,7 +530,7 @@ function drawCard(data){
   ctx.strokeStyle = "rgba(255,255,255,.10)";
   ctx.stroke();
 
-  // art background glow
+  // Glow based on protected/unprotected
   ctx.save();
   const ag = ctx.createRadialGradient(ax+aw*0.6, ay+ah*0.35, 20, ax+aw*0.6, ay+ah*0.35, aw*0.85);
   if(data.status === "PROTECTED"){
@@ -551,7 +545,7 @@ function drawCard(data){
   ctx.fillRect(ax, ay, aw, ah);
   ctx.restore();
 
-  // watermark logo large
+  // Watermark
   if(logoImg){
     ctx.save();
     ctx.globalAlpha = 0.09;
@@ -561,11 +555,10 @@ function drawCard(data){
     ctx.restore();
   }
 
-  // main art: sticker.png if available, else placeholder silhouette
+  // Art (optional sticker)
   if(artImg){
     ctx.save();
     ctx.globalAlpha = 0.98;
-    // fit art nicely inside, left-biased like a character
     const maxW = aw*0.62;
     const maxH = ah*0.78;
     const s = Math.min(maxW/artImg.width, maxH/artImg.height);
@@ -584,14 +577,12 @@ function drawCard(data){
     ctx.restore();
   }
 
-  // HOLO overlay on art box
+  // Holo overlays
   if(data.rarity === "HOLO") holoOverlay(ctx, ax, ay, aw, ah, 0.22);
   if(data.rarity === "DIAMOND HOLO") holoOverlay(ctx, ax, ay, aw, ah, 0.32);
-
-  // BROKEN overlay
   if(data.rarity === "BROKEN") crackOverlay(ctx, ax, ay, aw, ah);
 
-  // ABILITY BOX
+  // Ability box
   const bx = ax, by = ay+ah+20, bw = aw, bh = 92;
   rr(ctx, bx, by, bw, bh, 28);
   ctx.fillStyle = "rgba(0,0,0,.22)";
@@ -603,7 +594,7 @@ function drawCard(data){
   ctx.fillStyle = "rgba(255,255,255,.90)";
   ctx.fillText("Ability  ▲  Proof of Protection", bx+24, by+58);
 
-  // STATS PANEL
+  // Stats panel
   const sx = ix+26, sy = by+bh+16, sw = iw-52, sh = ih - (sy-iy) - 26;
   rr(ctx, sx, sy, sw, sh, 36);
   ctx.fillStyle = "rgba(0,0,0,.20)";
@@ -620,7 +611,7 @@ function drawCard(data){
   ctx.fillText("Guardian Level", lX, lY+gap*2);
   ctx.fillText("Wallet", lX, lY+gap*3);
 
-  // values
+  // Values
   ctx.font = "1000 26px ui-sans-serif, system-ui, Segoe UI, Arial";
   ctx.fillStyle = "rgba(255,255,255,.92)";
   ctx.fillText(data.status, lX+210, lY);
@@ -628,7 +619,7 @@ function drawCard(data){
   ctx.fillText(data.level, lX+210, lY+gap*2);
   ctx.fillText(shortWallet(data.wallet), lX+210, lY+gap*3);
 
-  // Pokémon-like bottom line: weakness / resistance / retreat
+  // Bottom divider + "weakness/resistance/retreat" line
   const bottomY = sy+sh-54;
   ctx.save();
   ctx.globalAlpha = 0.85;
@@ -646,40 +637,25 @@ function drawCard(data){
   ctx.fillText("Resistance", sx+sw*0.40, bottomY+32);
   ctx.fillText("Retreat", sx+sw*0.72, bottomY+32);
 
-  // values (meme-ish but consistent)
   ctx.font = "1000 20px ui-sans-serif, system-ui, Segoe UI, Arial";
   ctx.fillStyle = "rgba(255,255,255,.90)";
   ctx.fillText(data.status === "PROTECTED" ? "FUD ×2" : "FUD ×4", sx+26, bottomY+56);
   ctx.fillText(data.rarity.includes("HOLO") ? "LATENCY -20" : "LATENCY 0", sx+sw*0.40, bottomY+56);
   ctx.fillText(data.level === "UNBOUND" ? "★★★" : "★", sx+sw*0.72, bottomY+56);
 
-  // footer tiny set line
   const ts = new Date(data.timestamp || Date.now()).toISOString().replace("T"," ").slice(0,19) + " UTC";
   ctx.font = "800 16px ui-sans-serif, system-ui, Segoe UI, Arial";
   ctx.fillStyle = "rgba(255,255,255,.55)";
   ctx.fillText(`SET: SOS-GENESIS • ${ts}`, sx+26, sy+sh-18);
 
-  // slight overall holo on whole card for diamond
   if(data.rarity === "DIAMOND HOLO"){
     holoOverlay(ctx, ix, iy, iw, ih, 0.10);
   }
 }
 
 /** =========================
- *  Actions
+ *  Share + Download
  *  ========================= */
-function setReady(ready){
-  $("btnDownload").disabled = !ready;
-  const share = $("btnShare");
-  if(ready){
-    share.style.opacity = "1";
-    share.style.pointerEvents = "auto";
-  } else {
-    share.style.opacity = ".55";
-    share.style.pointerEvents = "none";
-  }
-}
-
 function makeShareUrl({walletShort, balance, status, rarity, level}){
   const base = window.location.href;
   const text =
@@ -695,6 +671,9 @@ Generate yours: ${base}`;
   return u.toString();
 }
 
+/** =========================
+ *  Generate
+ *  ========================= */
 async function generate(){
   const w = $("wallet").value.trim();
   $("statusLine").textContent = "";
@@ -734,10 +713,10 @@ async function generate(){
 
     $("statusLine").textContent = `${status} • ${rarity} • ${formatNumber(Math.floor(bal))} SOS`;
     setReady(true);
+
   } catch(e){
     console.error(e);
-    $("statusLine").textContent = "$("statusLine").textContent = "RPC error: " + (e?.message || "unknown");
-
+    $("statusLine").textContent = "RPC error: " + (e?.message || "unknown");
   }
 }
 
