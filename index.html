@@ -220,7 +220,12 @@
 const SOS_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
 
 // You can keep public RPC for now; if you ever get rate-limited, swap to a provider URL.
-const RPC_URL  = "https://api.mainnet-beta.solana.com";
+const RPC_URLS = [
+  "https://api.mainnet-beta.solana.com",
+  "https://rpc.ankr.com/solana",
+  "https://solana.drpc.org",
+];
+
 
 /** =========================
  *  Helpers
@@ -253,12 +258,46 @@ async function rpc(method, params){
   return j.result;
 }
 
-async function getSplBalance(owner, mint){
-  const result = await rpc("getTokenAccountsByOwner", [
-    owner,
-    { mint },
-    { encoding: "jsonParsed" }
-  ]);
+let _rpcIndex = 0;
+
+async function rpc(method, params){
+  const body = JSON.stringify({ jsonrpc:"2.0", id:1, method, params });
+
+  for(let attempt = 0; attempt < RPC_URLS.length; attempt++){
+    const url = RPC_URLS[_rpcIndex % RPC_URLS.length];
+
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 12000);
+
+    try{
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body,
+        signal: controller.signal
+      });
+
+      clearTimeout(t);
+
+      if(res.status === 429) throw new Error("Rate limited (429)");
+
+      if(!res.ok){
+        const txt = await res.text().catch(()=> "");
+        throw new Error(`HTTP ${res.status} ${txt}`.slice(0,180));
+      }
+
+      const j = await res.json();
+      if(j.error) throw new Error(j.error.message || "RPC error");
+      return j.result;
+
+    } catch(e){
+      clearTimeout(t);
+      _rpcIndex++;
+      if(attempt === RPC_URLS.length - 1) throw e;
+    }
+  }
+}
+
 
   const value = result?.value || [];
   if(value.length === 0) return 0;
@@ -697,7 +736,8 @@ async function generate(){
     setReady(true);
   } catch(e){
     console.error(e);
-    $("statusLine").textContent = "Could not fetch on-chain data (RPC error).";
+    $("statusLine").textContent = "$("statusLine").textContent = "RPC error: " + (e?.message || "unknown");
+
   }
 }
 
