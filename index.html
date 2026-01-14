@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#070711" />
-  <title>$SOS — Guardian DNA Scanner</title>
-  <meta name="description" content="Guardian DNA Scanner — decode wallet behavior on-chain + $SOS alignment." />
+  <title>$SOS — Guardian Intelligence</title>
+  <meta name="description" content="Guardian Intelligence — wallet DNA + $SOS alignment report." />
 
   <style>
     :root{
@@ -13,7 +13,6 @@
       --panel: rgba(255,255,255,.06);
       --panel2: rgba(255,255,255,.08);
       --stroke: rgba(255,255,255,.12);
-
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.70);
 
@@ -23,7 +22,7 @@
 
       --radius: 22px;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --max: 1120px;
+      --max: 1180px;
     }
 
     *{box-sizing:border-box}
@@ -64,7 +63,7 @@
     }
     .brand{
       display:flex; align-items:center; gap:12px;
-      min-width: 220px;
+      min-width: 240px;
       user-select:none;
     }
     .brand img{
@@ -80,9 +79,7 @@
       justify-content:flex-end;
       width:100%;
     }
-    @media (min-width: 980px){
-      .actions{width:auto}
-    }
+    @media (min-width: 980px){ .actions{width:auto} }
 
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
@@ -91,7 +88,7 @@
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: rgba(255,255,255,.88);
-      font-weight:900;
+      font-weight:950;
       font-size:13px;
       transition: .15s ease;
       user-select:none;
@@ -109,7 +106,6 @@
     .btn[disabled]{opacity:.55; pointer-events:none}
 
     main{padding:22px 0 42px}
-
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05));
       border: 1px solid rgba(255,255,255,.10);
@@ -127,12 +123,12 @@
     .hero::before{
       content:"";
       position:absolute;
-      inset:-60px -40px;
-      background: radial-gradient(900px 520px at 20% 30%, rgba(20,241,149,.16), transparent 60%),
-                  radial-gradient(900px 520px at 80% 20%, rgba(0,209,255,.12), transparent 60%),
-                  radial-gradient(900px 520px at 70% 80%, rgba(153,69,255,.14), transparent 60%);
-      z-index:0;
-      pointer-events:none;
+      inset:-70px -40px;
+      background:
+        radial-gradient(900px 520px at 18% 28%, rgba(20,241,149,.16), transparent 60%),
+        radial-gradient(900px 520px at 82% 20%, rgba(0,209,255,.12), transparent 60%),
+        radial-gradient(900px 520px at 70% 86%, rgba(153,69,255,.14), transparent 60%);
+      z-index:0; pointer-events:none;
     }
     .hero > *{position:relative; z-index:1}
 
@@ -141,7 +137,7 @@
       font-weight:1000;
       letter-spacing:-1px;
       line-height:1.05;
-      font-size: clamp(36px, 4.8vw, 62px);
+      font-size: clamp(36px, 4.6vw, 62px);
     }
     .gradText{
       background: linear-gradient(90deg, var(--g), var(--c), var(--p));
@@ -150,20 +146,18 @@
     .sub{
       margin-top:10px;
       color: rgba(255,255,255,.76);
-      font-weight:800;
-      max-width: 860px;
+      font-weight:850;
+      max-width: 900px;
     }
 
-    .split{
+    .grid2{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:16px;
       margin-top:16px;
       align-items:start;
     }
-    @media (max-width: 980px){
-      .split{grid-template-columns:1fr}
-    }
+    @media (max-width: 980px){ .grid2{grid-template-columns:1fr} }
 
     .panel{
       border:1px solid rgba(255,255,255,.10);
@@ -172,13 +166,12 @@
       padding:16px;
     }
 
-    .field{margin-top:12px}
     label{
       display:block;
       font-weight:950;
       font-size:12.5px;
       letter-spacing:.35px;
-      color: rgba(255,255,255,.80);
+      color: rgba(255,255,255,.82);
       margin-bottom:8px
     }
     input{
@@ -189,13 +182,64 @@
       background: rgba(0,0,0,.22);
       color: rgba(255,255,255,.92);
       outline:none;
-      font-weight:850;
+      font-weight:900;
       letter-spacing:.2px;
     }
     input:focus{
       border-color: rgba(0,209,255,.45);
       box-shadow: 0 0 0 3px rgba(0,209,255,.12);
     }
+
+    .classified{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; flex-wrap:wrap;
+    }
+    .stamp{
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing: .45px;
+      text-transform:uppercase;
+      color: rgba(255,255,255,.76);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      padding:7px 10px;
+    }
+
+    .big{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .big .left{
+      min-width: 240px;
+    }
+    .title2{
+      margin:0;
+      font-weight:1000;
+      font-size:22px;
+      letter-spacing:-.4px;
+    }
+    .mono{
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-weight:900;
+      color: rgba(255,255,255,.86);
+      margin-top:6px;
+    }
+
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-weight:1000;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .badge.good{border:0; background: linear-gradient(90deg,var(--g),var(--c),var(--p)); color:#061012}
+    .badge.warn{border-color: rgba(255,220,130,.35); background: rgba(255,220,130,.08); color: rgba(255,240,210,.92)}
+    .badge.bad{border-color: rgba(255,120,150,.35); background: rgba(255,120,150,.10); color: rgba(255,190,205,.95)}
 
     .kpiGrid{
       display:grid;
@@ -212,58 +256,9 @@
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.04);
     }
-    .kpi .k{color: rgba(255,255,255,.70); font-weight:850; font-size:12px; letter-spacing:.45px; text-transform:uppercase}
+    .kpi .k{color: rgba(255,255,255,.70); font-weight:900; font-size:12px; letter-spacing:.45px; text-transform:uppercase}
     .kpi .v{margin-top:8px; font-weight:1000; font-size:20px}
-    .kpi .mini{margin-top:6px; font-weight:800; font-size:12px; color: rgba(255,255,255,.62)}
-
-    .badge{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      font-weight:950;
-      font-size:12px;
-      white-space:nowrap;
-    }
-    .badge.good{border:0; background: linear-gradient(90deg,var(--g),var(--c),var(--p)); color:#061012}
-    .badge.warn{border-color: rgba(255,220,130,.35); background: rgba(255,220,130,.08); color: rgba(255,240,210,.92)}
-    .badge.bad{border-color: rgba(255,120,150,.35); background: rgba(255,120,150,.10); color: rgba(255,190,205,.95)}
-
-    .dnaCard{
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.12));
-      padding:16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .dnaCard::before{
-      content:"";
-      position:absolute; inset:-40px;
-      background:
-        radial-gradient(800px 420px at 15% 25%, rgba(20,241,149,.14), transparent 60%),
-        radial-gradient(800px 420px at 85% 20%, rgba(0,209,255,.10), transparent 60%),
-        radial-gradient(800px 420px at 70% 85%, rgba(153,69,255,.12), transparent 60%);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .dnaCard > *{position:relative; z-index:1}
-
-    .bigVerdict{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      flex-wrap:wrap;
-    }
-    .bigVerdict .title{
-      font-weight:1000;
-      letter-spacing:-.5px;
-      font-size:22px;
-    }
-    .mono{
-      font-family: ui-monospace, Menlo, Consolas, monospace;
-      font-weight:850;
-      color: rgba(255,255,255,.86);
-    }
+    .kpi .mini{margin-top:6px; font-weight:850; font-size:12px; color: rgba(255,255,255,.62)}
 
     .bar{
       margin-top:10px;
@@ -282,11 +277,47 @@
     }
 
     .statusLine{
-      margin-top:10px;
-      color: rgba(255,255,255,.70);
-      font-weight:850;
+      margin-top:12px;
+      color: rgba(255,255,255,.72);
+      font-weight:900;
       min-height: 18px;
       font-size:13px;
+    }
+
+    .table{
+      margin-top:12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      overflow:hidden;
+    }
+    .tr{
+      display:grid;
+      grid-template-columns: 140px 1fr 120px;
+      gap:12px;
+      padding:12px 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      align-items:center;
+    }
+    .tr:first-child{border-top:0}
+    @media (max-width: 860px){
+      .tr{grid-template-columns: 120px 1fr; }
+      .tr .col3{display:none}
+    }
+    .th{
+      background: rgba(255,255,255,.04);
+      font-weight:1000;
+      color: rgba(255,255,255,.75);
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      font-size:11.5px;
+    }
+    .cellMain{font-weight:950}
+    .cellSub{font-size:12px; font-weight:850; color: rgba(255,255,255,.62); margin-top:3px}
+    .link{
+      text-decoration:underline;
+      text-underline-offset: 3px;
+      opacity:.95;
     }
 
     footer{
@@ -295,13 +326,6 @@
       font-weight:650;
       text-align:center;
       font-size:12px;
-    }
-
-    .tiny{
-      font-size:12px;
-      color: rgba(255,255,255,.55);
-      font-weight:700;
-      margin-top:10px;
     }
   </style>
 </head>
@@ -314,16 +338,13 @@
           <img id="brandLogo" src="logo.png" alt="$SOS" onerror="this.style.display='none'">
           <div class="bt">
             <div class="t">$SOS</div>
-            <div class="s">Guardian DNA Scanner</div>
+            <div class="s">Guardian Intelligence</div>
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn" id="btnDemo">Load Demo Wallet</button>
-          <button class="btn" id="btnAuto">Auto: ON</button>
-          <button class="btn grad" id="btnScan">Scan DNA</button>
-          <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer"
-             style="opacity:.55; pointer-events:none;">Share on X</a>
+          <button class="btn grad" id="btnScan">Scan Wallet</button>
+          <a class="btn" id="btnShare" href="#" target="_blank" rel="noreferrer" style="opacity:.55; pointer-events:none;">Share on X</a>
         </div>
       </div>
     </div>
@@ -332,85 +353,134 @@
   <main class="wrap">
     <section class="card hero">
       <div class="inner">
-        <h1 class="h1"><span class="gradText">Decode</span> Wallet DNA</h1>
-        <div class="sub">
-          This scanner reads public on-chain behavior and classifies a wallet’s conviction.
-          It outputs a GLOBAL DNA profile + a separate $SOS alignment verdict.
+        <div class="classified">
+          <div class="stamp">GUARDIAN SYSTEM • MAINNET • CLASSIFIED</div>
+          <div class="stamp" id="stampTime">—</div>
         </div>
 
-        <div class="split">
+        <h1 class="h1" style="margin-top:12px;"><span class="gradText">Guardian</span> Wallet DNA</h1>
+        <div class="sub">
+          A high-signal intelligence scan: capital strength, behavioral profile, venue footprint, and $SOS alignment — derived from public on-chain activity.
+        </div>
+
+        <div class="grid2">
+          <!-- Input -->
           <div class="panel">
-            <div class="field">
-              <label for="wallet">Wallet Address</label>
-              <input id="wallet" placeholder="Paste Solana wallet…" autocomplete="off" spellcheck="false" />
-            </div>
-
-            <div class="field">
-              <label for="helius">Helius API Key</label>
-              <input id="helius" placeholder="Paste your Helius key here…" autocomplete="off" spellcheck="false" />
-              <div class="tiny">Tip: rotate your key if you posted it anywhere.</div>
-            </div>
-
-            <div class="field">
-              <label for="mint">$SOS Mint (optional — set later)</label>
-              <input id="mint" placeholder="Paste $SOS mint (or leave default test mint)…" autocomplete="off" spellcheck="false" />
-              <div class="tiny">Default is a temporary test mint. Replace when your real mint is ready.</div>
-            </div>
-
-            <div class="statusLine" id="status">—</div>
+            <label for="wallet">Wallet Address</label>
+            <input id="wallet" placeholder="Paste Solana wallet…" autocomplete="off" spellcheck="false" />
+            <div class="statusLine" id="status">Ready.</div>
           </div>
 
-          <div class="dnaCard">
-            <div class="bigVerdict">
-              <div>
-                <div class="title" id="arch">—</div>
-                <div class="tiny mono" id="walletShort">—</div>
+          <!-- Headline -->
+          <div class="panel">
+            <div class="big">
+              <div class="left">
+                <h3 class="title2" id="arch">—</h3>
+                <div class="mono" id="walletShort">—</div>
               </div>
-              <span class="badge" id="verdictBadge">—</span>
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <span class="badge" id="verdictBadge">—</span>
+                <span class="badge good" id="powerBadge">—</span>
+              </div>
             </div>
 
             <div class="kpiGrid">
               <div class="kpi">
-                <div class="k">Conviction</div>
-                <div class="v" id="sConv">—</div>
-                <div class="mini" id="mConv">—</div>
-                <div class="bar"><div id="bConv"></div></div>
+                <div class="k">Overall Power</div>
+                <div class="v" id="sPower">—</div>
+                <div class="mini" id="mPower">—</div>
+                <div class="bar"><div id="bPower"></div></div>
               </div>
+
               <div class="kpi">
-                <div class="k">Jeeter Risk</div>
-                <div class="v" id="sJeet">—</div>
-                <div class="mini" id="mJeet">—</div>
-                <div class="bar"><div id="bJeet"></div></div>
+                <div class="k">SOL Balance</div>
+                <div class="v" id="sSol">—</div>
+                <div class="mini" id="mSol">—</div>
               </div>
+
               <div class="kpi">
-                <div class="k">Heat</div>
-                <div class="v" id="sHeat">—</div>
-                <div class="mini" id="mHeat">—</div>
-                <div class="bar"><div id="bHeat"></div></div>
-              </div>
-              <div class="kpi">
-                <div class="k">Discipline</div>
-                <div class="v" id="sDisc">—</div>
-                <div class="mini" id="mDisc">—</div>
-                <div class="bar"><div id="bDisc"></div></div>
-              </div>
-              <div class="kpi">
-                <div class="k">Token Diversity</div>
-                <div class="v" id="sDiv">—</div>
-                <div class="mini" id="mDiv">—</div>
-                <div class="bar"><div id="bDiv"></div></div>
-              </div>
-              <div class="kpi">
-                <div class="k">$SOS Alignment</div>
+                <div class="k">$SOS Holding</div>
                 <div class="v" id="sSOS">—</div>
                 <div class="mini" id="mSOS">—</div>
-                <div class="bar"><div id="bSOS"></div></div>
+              </div>
+
+              <div class="kpi">
+                <div class="k">Activity</div>
+                <div class="v" id="sAct">—</div>
+                <div class="mini" id="mAct">—</div>
+                <div class="bar"><div id="bAct"></div></div>
+              </div>
+
+              <div class="kpi">
+                <div class="k">Stability</div>
+                <div class="v" id="sStab">—</div>
+                <div class="mini" id="mStab">—</div>
+                <div class="bar"><div id="bStab"></div></div>
+              </div>
+
+              <div class="kpi">
+                <div class="k">Venue Footprint</div>
+                <div class="v" id="sVen">—</div>
+                <div class="mini" id="mVen">—</div>
+                <div class="bar"><div id="bVen"></div></div>
               </div>
             </div>
 
             <div class="statusLine" id="summary">—</div>
           </div>
         </div>
+
+        <!-- Recent activity table -->
+        <div class="panel" style="margin-top:16px;">
+          <div class="classified">
+            <div class="stamp">RECENT ON-CHAIN ACTIVITY</div>
+            <div class="stamp" id="txHint">—</div>
+          </div>
+
+          <div class="table" id="txTable" style="margin-top:10px;">
+            <div class="tr th">
+              <div>Time</div>
+              <div>Source / Type</div>
+              <div class="col3">Link</div>
+            </div>
+            <div class="tr">
+              <div class="cellMain">—</div>
+              <div>
+                <div class="cellMain">No scan yet</div>
+                <div class="cellSub">Paste a wallet and run scan.</div>
+              </div>
+              <div class="col3">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token intel -->
+        <div class="panel" style="margin-top:16px;">
+          <div class="classified">
+            <div class="stamp">$SOS TOKEN INTEL</div>
+            <div class="stamp" id="tokenStamp">—</div>
+          </div>
+
+          <div class="kpiGrid" style="margin-top:10px;">
+            <div class="kpi">
+              <div class="k">Supply</div>
+              <div class="v" id="tSupply">—</div>
+              <div class="mini" id="tSupplyM">—</div>
+            </div>
+            <div class="kpi">
+              <div class="k">Top 20 Concentration</div>
+              <div class="v" id="tTop20">—</div>
+              <div class="mini" id="tTop20M">—</div>
+              <div class="bar"><div id="bTop20"></div></div>
+            </div>
+            <div class="kpi">
+              <div class="k">Guardian Tier</div>
+              <div class="v" id="tTier">—</div>
+              <div class="mini" id="tTierM">—</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -418,14 +488,25 @@
   </main>
 
 <script>
-/** ============ Defaults ============ */
-const DEFAULT_TEST_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
-const DEFAULT_DEMO_WALLET = "7Q5LrGxQ8x9pK2m8wB7u9zWQ9Vt2pG2o9m5o8Z7p1p3X"; // harmless placeholder format
+/* ============================================================
+   CONFIG (ONLY TWO THINGS YOU WILL EVER CHANGE)
+   1) HELIUS_KEY  -> paste your key once
+   2) SOS_MINT    -> later replace with your real mint
+============================================================ */
+const HELIUS_KEY = "PASTE_HELIUS_KEY_HERE";
 
+/* Silent test mint (you will replace later with real $SOS mint) */
+const SOS_MINT = "SOS_MINT_HERE";
+
+/* If you want to keep your current temporary test mint, put it here:
+   const SOS_MINT = "a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump";
+*/
+
+// ------------------------------------------------------------
 const $ = (id)=>document.getElementById(id);
 $("y").textContent = new Date().getFullYear();
+$("stampTime").textContent = new Date().toISOString().replace("T"," ").slice(0,19) + " UTC";
 
-/** logo load (root or /assets) */
 (async ()=>{
   const el = $("brandLogo");
   const trySrc = async (src)=> new Promise(res=>{
@@ -446,21 +527,29 @@ function looksBase58(s){
 function shortAddr(a){ return a ? (a.slice(0,4)+"…"+a.slice(-4)) : "—"; }
 function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 function pctBar(el, val){ el.style.width = clamp(val,0,100) + "%"; }
+function fmt(n, d=2){
+  if(n === null || n === undefined || Number.isNaN(n)) return "—";
+  const x = Number(n);
+  if(!Number.isFinite(x)) return "—";
+  if(Math.abs(x) >= 1_000_000) return (x/1_000_000).toFixed(2)+"M";
+  if(Math.abs(x) >= 1_000) return (x/1_000).toFixed(2)+"K";
+  return x.toFixed(d);
+}
+function fmtInt(n){
+  if(n === null || n === undefined || Number.isNaN(n)) return "—";
+  try { return new Intl.NumberFormat("en-US").format(Math.round(Number(n))); } catch { return String(n); }
+}
 function setBadge(el, txt, mode){
   el.textContent = txt;
   el.classList.remove("good","warn","bad");
   if(mode) el.classList.add(mode);
 }
 
-function fmt(n){
-  if(n === null || n === undefined || Number.isNaN(n)) return "—";
-  try { return new Intl.NumberFormat("en-US").format(n); } catch { return String(n); }
-}
-
-/** ============ Helius calls ============ */
-async function heliusFetch(apiKey, path, params){
+// ---------- Helius enhanced
+async function heliusGET(path, params){
+  if(!HELIUS_KEY || HELIUS_KEY.includes("PASTE_")) throw new Error("Helius key not set in CONFIG.");
   const u = new URL(`https://api.helius.xyz${path}`);
-  u.searchParams.set("api-key", apiKey);
+  u.searchParams.set("api-key", HELIUS_KEY);
   if(params){
     for(const [k,v] of Object.entries(params)){
       if(v !== undefined && v !== null) u.searchParams.set(k, String(v));
@@ -474,27 +563,23 @@ async function heliusFetch(apiKey, path, params){
   return res.json();
 }
 
-/**
- * Enhanced transactions for a wallet (recent window).
- * Endpoint: /v0/addresses/{address}/transactions
- * Note: Helius supports this. Free tier usually allows limited volume.
- */
-async function getRecentTx(apiKey, wallet, limit=120){
-  return heliusFetch(apiKey, `/v0/addresses/${wallet}/transactions`, { limit });
+async function getRecentTx(wallet, limit=140){
+  return heliusGET(`/v0/addresses/${wallet}/transactions`, { limit });
 }
 
-/** Minimal RPC fallback list (only for token balance) */
-function rpcUrls(apiKey){
+// ---------- RPC fallback (Helius RPC first)
+function rpcUrls(){
+  const helius = `https://mainnet.helius-rpc.com/?api-key=${encodeURIComponent(HELIUS_KEY)}`;
   return [
-    `https://mainnet.helius-rpc.com/?api-key=${encodeURIComponent(apiKey)}`,
+    helius,
     "https://api.mainnet-beta.solana.com",
     "https://rpc.ankr.com/solana",
     "https://solana.drpc.org"
   ];
 }
 let _rpcIndex = 0;
-async function rpc(apiKey, method, params){
-  const urls = rpcUrls(apiKey);
+async function rpc(method, params){
+  const urls = rpcUrls();
   const body = JSON.stringify({ jsonrpc:"2.0", id:1, method, params });
 
   for(let attempt=0; attempt<urls.length; attempt++){
@@ -528,14 +613,18 @@ async function rpc(apiKey, method, params){
   }
 }
 
-async function getSplBalance(apiKey, owner, mint){
-  const r = await rpc(apiKey, "getTokenAccountsByOwner", [
+async function getSolBalanceLamports(owner){
+  const r = await rpc("getBalance", [owner, { commitment:"confirmed" }]);
+  return r?.value ?? 0;
+}
+async function getSplBalance(owner, mint){
+  if(!looksBase58(mint)) return 0;
+  const r = await rpc("getTokenAccountsByOwner", [
     owner,
     { mint },
     { encoding:"jsonParsed" }
   ]);
   const arr = r?.value || [];
-  if(arr.length === 0) return 0;
   let total = 0;
   for(const it of arr){
     const ta = it?.account?.data?.parsed?.info?.tokenAmount;
@@ -543,165 +632,146 @@ async function getSplBalance(apiKey, owner, mint){
   }
   return total;
 }
+async function getTokenSupply(mint){
+  const r = await rpc("getTokenSupply", [mint]);
+  return r?.value || null;
+}
+async function getTokenLargest(mint){
+  const r = await rpc("getTokenLargestAccounts", [mint]);
+  return r?.value || [];
+}
 
-/** ============ DNA Heuristics (Hype-grade) ============ */
-/**
- * We extract high-signal features from recent enhanced tx:
- * - activity rate (tx count)
- * - swap ratio (presence of swap-like sources)
- * - diversity (unique token mints touched)
- * - hold discipline proxy (fewer quick in/out patterns)
- * - jeeter risk proxy (high swap ratio + high diversity + low discipline)
- *
- * This is intentionally "signal-first": it produces a fun, shareable classification.
- */
-function analyzeDNA(txs){
-  const N = txs.length || 0;
-  if(N === 0){
+// ---------- Intelligence extraction
+function analyzeWallet(txs){
+  const N = Array.isArray(txs) ? txs.length : 0;
+  if(!N){
     return {
-      conviction: 10, jeeter: 90, heat: 5, discipline: 10, diversity: 5,
       archetype: "UNREADABLE PROFILE",
       verdict: {label:"OBSERVED", badge:"warn"},
+      power: 10,
+      activity: 5,
+      stability: 20,
+      venue: 10,
+      venuesTop: [],
+      diversityRaw: 0,
+      solFlow: 0,
       summary: "No readable recent activity window."
     };
   }
 
-  // features
   let swapish = 0;
-  let sources = new Map();
+  let venues = new Map();
   let mints = new Set();
-  let transferCount = 0;
-
-  // A light “in/out” proxy: count txs where both tokenTransfers in & out exist.
-  // This indicates frequent rotation.
   let inOut = 0;
 
+  let solIn = 0, solOut = 0;
+
   for(const tx of txs){
-    const src = (tx.source || "UNKNOWN").toString().toUpperCase();
-    sources.set(src, (sources.get(src)||0) + 1);
+    const src = String(tx.source || "UNKNOWN").toUpperCase();
+    venues.set(src, (venues.get(src)||0) + 1);
 
-    // many enhanced tx contain tokenTransfers array
+    // token diversity + rotation proxy
     const tt = Array.isArray(tx.tokenTransfers) ? tx.tokenTransfers : [];
-    if(tt.length) transferCount += tt.length;
-
     const hasIn = tt.some(t => t.toUserAccount);
     const hasOut = tt.some(t => t.fromUserAccount);
     if(hasIn && hasOut) inOut++;
 
-    // collect mints touched
     for(const t of tt){
       if(t.mint) mints.add(t.mint);
     }
 
-    // swapish sources
+    // venue classification
     if(src.includes("JUPITER") || src.includes("RAYDIUM") || src.includes("ORCA") || src.includes("METEORA") || src.includes("SWAP")){
       swapish++;
+    }
+
+    // native SOL flow (enhanced)
+    const nt = Array.isArray(tx.nativeTransfers) ? tx.nativeTransfers : [];
+    for(const n of nt){
+      const amt = Number(n.amount || 0) / 1e9; // lamports -> SOL
+      if(!Number.isFinite(amt) || amt <= 0) continue;
+      // in enhanced tx, "fromUserAccount" / "toUserAccount" sometimes exists
+      if(n.toUserAccount) solIn += amt;
+      if(n.fromUserAccount) solOut += amt;
     }
   }
 
   const swapRatio = swapish / Math.max(1, N);
-  const diversityRaw = mints.size;
   const inOutRatio = inOut / Math.max(1, N);
+  const diversityRaw = mints.size;
+  const diversityScore = clamp(Math.round(diversityRaw * 6), 0, 100);
 
-  // Scores (0..100)
-  const heat = clamp(Math.round(N / 1.2), 0, 100);                 // more tx => hotter
-  const diversity = clamp(Math.round(diversityRaw * 6), 0, 100);   // more mints => higher
-  const discipline = clamp(Math.round((1 - inOutRatio) * 100), 0, 100); // fewer rotations => higher discipline
+  const activity = clamp(Math.round(N / 1.2), 0, 100);
+  const stability = clamp(Math.round((1 - inOutRatio) * 100), 0, 100);
+  const venue = clamp(Math.round((Math.min(12, venues.size) / 12) * 100), 0, 100);
 
-  // conviction: high discipline + lower swapiness + moderate diversity
-  const conviction = clamp(
-    Math.round((discipline * 0.55) + ((1 - swapRatio) * 100 * 0.25) + (Math.max(0, 60 - diversity) * 0.20)),
-    0, 100
-  );
+  const solFlow = (solIn - solOut); // heuristic over recent window
 
-  // jeeter risk: swapiness + inOut + high diversity
-  const jeeter = clamp(
-    Math.round((swapRatio * 100 * 0.45) + (inOutRatio * 100 * 0.35) + (diversity * 0.20)),
-    0, 100
-  );
+  // Power score: designed for “wow” but still grounded in behavior
+  // Emphasize stability + activity; penalize hyper-rotation
+  const power = clamp(Math.round(
+    (stability * 0.38) +
+    (activity * 0.30) +
+    ((1 - swapRatio) * 100 * 0.14) +
+    (Math.max(0, 70 - diversityScore) * 0.10) +
+    (venue * 0.08)
+  ), 0, 100);
 
-  // Archetype selection (this is where the hype lives)
   let archetype = "CHAIN WALKER";
-  if(conviction >= 78 && jeeter <= 35) archetype = "DIAMOND OPERATOR";
-  else if(conviction >= 65 && diversity <= 35) archetype = "QUIET ACCUMULATOR";
-  else if(jeeter >= 75 && diversity >= 60) archetype = "EXIT LIQUIDITY ENGINE";
-  else if(jeeter >= 68 && heat >= 60) archetype = "SWAP ADDICT";
-  else if(discipline >= 70 && heat <= 35) archetype = "SLEEPING WHALE";
-  else if(heat >= 80 && diversity <= 40) archetype = "HUNT MODE";
-  else if(diversity >= 70 && heat <= 55) archetype = "COIN NOMAD";
-  else if(discipline <= 35 && inOutRatio >= 0.35) archetype = "PANIC ROTATOR";
+  if(power >= 85 && stability >= 75) archetype = "DIAMOND OPERATOR";
+  else if(stability >= 75 && activity <= 45) archetype = "SLEEPING WHALE";
+  else if(activity >= 80 && stability >= 55) archetype = "HUNT MODE";
+  else if(swapRatio >= 0.55 && diversityRaw >= 10) archetype = "VENUE DRIFTER";
+  else if(inOutRatio >= 0.35 && stability <= 45) archetype = "HIGH ROTATION";
+  else if(diversityRaw >= 14) archetype = "TOKEN NOMAD";
+  else if(stability >= 65 && diversityRaw <= 6) archetype = "QUIET ACCUMULATOR";
 
-  // Verdict framing
   let verdict = {label:"OBSERVED", badge:"warn"};
-  if(conviction >= 75 && jeeter <= 45) verdict = {label:"APPROVED", badge:"good"};
-  if(jeeter >= 80 && conviction <= 40) verdict = {label:"EXILED", badge:"bad"};
+  if(power >= 78 && stability >= 60) verdict = {label:"APPROVED", badge:"good"};
+  if(power <= 35 && stability <= 40) verdict = {label:"FLAGGED", badge:"bad"};
 
-  // Summary line (share-worthy)
+  const venuesTop = Array.from(venues.entries())
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,3)
+    .map(([k,v])=>({k,v}));
+
   const summary =
-    `${archetype} • Conviction ${conviction}/100 • Jeeter Risk ${jeeter}/100 • Discipline ${discipline}/100 • Diversity ${diversityRaw} mints`;
+    `${archetype} • Power ${power}/100 • Stability ${stability}/100 • Activity ${activity}/100 • Diversity ${diversityRaw} • Net SOL flow ${solFlow.toFixed(3)} (window)`;
 
-  return { conviction, jeeter, heat, discipline, diversity, archetype, verdict, diversityRaw, summary };
+  return { archetype, verdict, power, activity, stability, venue, venuesTop, diversityRaw, solFlow, summary };
 }
 
-/** $SOS alignment (separate; exact) */
-function sosAlignment(holding){
-  // alignment is intentionally nonlinear for hype
-  if(holding <= 0) return {score: 0, label:"UNALIGNED", mini:"No $SOS detected.", badge:"bad", level:"UNBOUND"};
-  if(holding >= 1_000_000) return {score: 98, label:"DIAMOND", mini:"Guardian-grade conviction.", badge:"good", level:"PROTECTOR"};
-  if(holding >= 100_000)   return {score: 85, label:"PROTECTED", mini:"Aligned to the Guardian.", badge:"good", level:"SENTINEL"};
-  if(holding >= 10_000)    return {score: 62, label:"WATCHING", mini:"Holding — strengthen position.", badge:"warn", level:"WATCHER"};
-  return {score: 40, label:"FRINGE", mini:"Small position detected.", badge:"warn", level:"WATCHER"};
+function sosTier(holding){
+  if(holding <= 0) return {tier:"UNALIGNED", badge:"bad", align: 0, note:"No position detected."};
+  if(holding >= 1_000_000) return {tier:"DIAMOND", badge:"good", align: 98, note:"Guardian-grade alignment."};
+  if(holding >= 100_000)   return {tier:"PROTECTED", badge:"good", align: 85, note:"Strong alignment."};
+  if(holding >= 10_000)    return {tier:"WATCHER", badge:"warn", align: 62, note:"Building position."};
+  return {tier:"FRINGE", badge:"warn", align: 40, note:"Small position."};
 }
 
-/** Share builder */
-function buildShareText(wallet, dna, sos){
+function buildShareText(wallet, intel, solBal, sosHold, sos){
   const link = location.href;
   const w = shortAddr(wallet);
+  const topVen = intel.venuesTop.map(x=>x.k).join(", ") || "—";
 
   const lines = [
-    `🛡️ GUARDIAN DNA SCAN — $SOS`,
+    `🛡️ GUARDIAN INTELLIGENCE — $SOS`,
     ``,
     `Wallet: ${w}`,
-    `Archetype: ${dna.archetype}`,
-    `Verdict: ${dna.verdict.label}`,
-    `Conviction: ${dna.conviction}/100`,
-    `Jeeter Risk: ${dna.jeeter}/100`,
-    `Discipline: ${dna.discipline}/100`,
-    `Diversity: ${dna.diversityRaw} mints`,
+    `Archetype: ${intel.archetype}`,
+    `Verdict: ${intel.verdict.label}`,
+    `Power: ${intel.power}/100`,
+    `Stability: ${intel.stability}/100`,
+    `Activity: ${intel.activity}/100`,
+    `Venues: ${topVen}`,
+    `SOL: ${solBal.toFixed(3)}`,
     ``,
-    `$SOS Alignment: ${sos.label} (${sos.score}/100)`,
-    `Level: ${sos.level}`,
+    `$SOS Tier: ${sos.tier} • Holding: ${Math.floor(sosHold)}`,
     ``,
     `Scan yours: ${link}`
   ];
   return lines.join("\n");
 }
-
-/** ============ UI wiring ============ */
-let autoOn = true;
-let timer = null;
-
-function setAuto(on){
-  autoOn = on;
-  $("btnAuto").textContent = `Auto: ${on ? "ON" : "OFF"}`;
-  $("btnAuto").classList.toggle("grad", on);
-  if(timer){ clearInterval(timer); timer = null; }
-  if(on){
-    timer = setInterval(()=>{ scan(true); }, 45000);
-  }
-}
-
-$("btnAuto").addEventListener("click", ()=> setAuto(!autoOn));
-setAuto(true);
-
-$("btnDemo").addEventListener("click", ()=>{
-  $("wallet").value = DEFAULT_DEMO_WALLET;
-  $("mint").value = DEFAULT_TEST_MINT;
-  $("status").textContent = "Demo loaded. Paste your Helius key and run scan.";
-});
-
-$("btnScan").addEventListener("click", ()=> scan(false));
-$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") scan(false); });
 
 function setShareEnabled(enabled, url){
   const a = $("btnShare");
@@ -716,84 +786,164 @@ function setShareEnabled(enabled, url){
   }
 }
 
-function putScore(idV, idM, idB, value, mini){
-  $(idV).textContent = `${value}/100`;
-  $(idM).textContent = mini;
-  pctBar($(idB), value);
+function fillTxTable(wallet, txs){
+  const table = $("txTable");
+  const head = table.firstElementChild; // header row
+  table.innerHTML = "";
+  table.appendChild(head);
+
+  const list = (Array.isArray(txs) ? txs : []).slice(0,12);
+  $("txHint").textContent = list.length ? `${list.length} latest events` : "—";
+
+  if(!list.length){
+    const row = document.createElement("div");
+    row.className = "tr";
+    row.innerHTML = `<div class="cellMain">—</div>
+      <div><div class="cellMain">No recent events found</div><div class="cellSub">Try another wallet.</div></div>
+      <div class="col3">—</div>`;
+    table.appendChild(row);
+    return;
+  }
+
+  for(const tx of list){
+    const t = tx.timestamp ? new Date(tx.timestamp * 1000) : null;
+    const time = t ? t.toISOString().slice(0,16).replace("T"," ")+"Z" : "—";
+    const src = String(tx.source || "UNKNOWN");
+    const type = String(tx.type || "TRANSACTION");
+    const sig = String(tx.signature || "");
+    const solscan = sig ? `https://solscan.io/tx/${sig}` : "#";
+
+    const row = document.createElement("div");
+    row.className = "tr";
+    row.innerHTML = `
+      <div class="cellMain">${time}</div>
+      <div>
+        <div class="cellMain">${src} • ${type}</div>
+        <div class="cellSub mono">${sig ? (sig.slice(0,10)+"…"+sig.slice(-10)) : "—"}</div>
+      </div>
+      <div class="col3"><a class="link" href="${solscan}" target="_blank" rel="noreferrer">View</a></div>
+    `;
+    table.appendChild(row);
+  }
 }
 
-async function scan(silent){
-  const wallet = $("wallet").value.trim();
-  const key = $("helius").value.trim();
-  const mint = ($("mint").value.trim() || DEFAULT_TEST_MINT);
+async function fillTokenIntel(holding){
+  // supply + top20 concentration (approx from largest accounts)
+  if(!looksBase58(SOS_MINT) || SOS_MINT.includes("SOS_MINT_HERE")){
+    $("tSupply").textContent = "—";
+    $("tSupplyM").textContent = "Mint not set.";
+    $("tTop20").textContent = "—";
+    $("tTop20M").textContent = "—";
+    pctBar($("bTop20"), 0);
+    $("tTier").textContent = "—";
+    $("tTierM").textContent = "—";
+    return;
+  }
 
+  $("tokenStamp").textContent = `Mint: ${shortAddr(SOS_MINT)}`;
+
+  const supply = await getTokenSupply(SOS_MINT);
+  const decimals = supply ? Number(supply.decimals || 0) : 0;
+  const uiSupply = supply ? Number(supply.uiAmount || 0) : null;
+
+  $("tSupply").textContent = uiSupply !== null ? fmtInt(uiSupply) : "—";
+  $("tSupplyM").textContent = uiSupply !== null ? `Decimals: ${decimals}` : "—";
+
+  const largest = await getTokenLargest(SOS_MINT);
+  const top20 = largest.slice(0,20);
+  const topSum = top20.reduce((acc,x)=> acc + Number(x.uiAmount || 0), 0);
+  const conc = (uiSupply && uiSupply > 0) ? (topSum / uiSupply) * 100 : 0;
+
+  $("tTop20").textContent = uiSupply ? `${conc.toFixed(2)}%` : "—";
+  $("tTop20M").textContent = uiSupply ? `Top20: ${fmtInt(topSum)} / ${fmtInt(uiSupply)}` : "—";
+  pctBar($("bTop20"), conc);
+
+  const tier = sosTier(holding);
+  $("tTier").textContent = tier.tier;
+  $("tTierM").textContent = tier.note;
+}
+
+async function scan(){
+  const wallet = $("wallet").value.trim();
   setShareEnabled(false);
 
   if(!looksBase58(wallet)){
     $("status").textContent = "Invalid wallet address.";
     return;
   }
-  if(!key || key.length < 10){
-    $("status").textContent = "Paste your Helius API key.";
+  if(!HELIUS_KEY || HELIUS_KEY.includes("PASTE_")){
+    $("status").textContent = "Scanner is not configured (Helius key missing).";
     return;
   }
-  if(!looksBase58(mint)){
-    $("status").textContent = "Mint looks invalid (or leave empty).";
-    return;
-  }
+
+  $("status").textContent = "Running Guardian scan…";
+  $("walletShort").textContent = shortAddr(wallet);
 
   try{
-    if(!silent) $("status").textContent = "Scanning on-chain DNA…";
-    $("walletShort").textContent = shortAddr(wallet);
+    // parallel pulls
+    const [txs, solLamports, sosHold] = await Promise.all([
+      getRecentTx(wallet, 140),
+      getSolBalanceLamports(wallet),
+      getSplBalance(wallet, SOS_MINT)
+    ]);
 
-    // 1) Global DNA from recent enhanced tx
-    const txs = await getRecentTx(key, wallet, 120);
-    const dna = analyzeDNA(Array.isArray(txs) ? txs : []);
+    const solBal = Number(solLamports) / 1e9;
 
-    // 2) SOS exact alignment
-    const holding = await getSplBalance(key, wallet, mint);
-    const sos = sosAlignment(holding);
+    const intel = analyzeWallet(txs);
+    const sos = sosTier(sosHold);
 
-    // UI: archetype + verdict
-    $("arch").textContent = dna.archetype;
-    setBadge($("verdictBadge"), dna.verdict.label, dna.verdict.badge);
+    // Header
+    $("arch").textContent = intel.archetype;
+    setBadge($("verdictBadge"), intel.verdict.label, intel.verdict.badge);
 
-    putScore("sConv","mConv","bConv", dna.conviction,
-      dna.conviction >= 75 ? "High conviction profile." : (dna.conviction >= 55 ? "Mixed conviction." : "Low conviction pattern.")
-    );
-    putScore("sJeet","mJeet","bJeet", 100 - dna.jeeter,
-      dna.jeeter <= 35 ? "Low jeeter tendency." : (dna.jeeter <= 60 ? "Watch behavior." : "High jeeter tendency.")
-    );
-    putScore("sHeat","mHeat","bHeat", dna.heat,
-      dna.heat >= 75 ? "Very active on-chain." : (dna.heat >= 45 ? "Active wallet." : "Low activity.")
-    );
-    putScore("sDisc","mDisc","bDisc", dna.discipline,
-      dna.discipline >= 70 ? "Strong discipline." : (dna.discipline >= 45 ? "Some rotation." : "Frequent flip behavior.")
-    );
-    putScore("sDiv","mDiv","bDiv", dna.diversity,
-      dna.diversityRaw >= 12 ? "Touches many tokens." : (dna.diversityRaw >= 6 ? "Diversified." : "Focused wallet.")
-    );
+    $("powerBadge").textContent = `POWER ${intel.power}%`;
+    $("sPower").textContent = `${intel.power}%`;
+    $("mPower").textContent = intel.power >= 80 ? "High-strength profile." : (intel.power >= 55 ? "Solid profile." : "Low-strength profile.");
+    pctBar($("bPower"), intel.power);
 
-    // SOS alignment score
-    $("sSOS").textContent = `${sos.score}/100`;
-    $("mSOS").textContent = `${sos.label} • ${sos.mini}`;
-    pctBar($("bSOS"), sos.score);
+    $("sSol").textContent = `${solBal.toFixed(3)} SOL`;
+    $("mSol").textContent = solBal >= 50 ? "High capital reserve." : (solBal >= 5 ? "Moderate reserve." : "Low reserve.");
 
-    $("summary").textContent = dna.summary + ` • $SOS holding ${fmt(Math.floor(holding))}`;
+    $("sSOS").textContent = fmtInt(Math.floor(sosHold));
+    $("mSOS").textContent = `${sos.tier} • ${sos.note}`;
+
+    $("sAct").textContent = `${intel.activity}/100`;
+    $("mAct").textContent = intel.activity >= 75 ? "High on-chain tempo." : (intel.activity >= 45 ? "Active wallet." : "Low tempo.");
+    pctBar($("bAct"), intel.activity);
+
+    $("sStab").textContent = `${intel.stability}/100`;
+    $("mStab").textContent = intel.stability >= 70 ? "Low rotation behavior." : (intel.stability >= 45 ? "Mixed rotation." : "High rotation.");
+    pctBar($("bStab"), intel.stability);
+
+    const vtxt = intel.venuesTop.map(x=>x.k).join(", ") || "UNKNOWN";
+    $("sVen").textContent = `${intel.venue}/100`;
+    $("mVen").textContent = `Top venues: ${vtxt}`;
+    pctBar($("bVen"), intel.venue);
+
+    $("summary").textContent = intel.summary;
+
+    // Transactions table
+    fillTxTable(wallet, txs);
+
+    // Token intel
+    await fillTokenIntel(sosHold);
 
     // Share
-    const text = buildShareText(wallet, dna, sos);
+    const text = buildShareText(wallet, intel, solBal, sosHold, sos);
     const u = new URL("https://x.com/intent/tweet");
     u.searchParams.set("text", text);
     setShareEnabled(true, u.toString());
 
-    $("status").textContent = `Scan complete: ${dna.verdict.label} • ${dna.archetype} • $SOS ${sos.label}`;
+    $("status").textContent = `Scan complete: ${intel.verdict.label} • ${intel.archetype}`;
 
   }catch(e){
     console.error(e);
-    $("status").textContent = "Error: " + (e?.message || "unknown");
+    $("status").textContent = "Scan failed: " + (e?.message || "unknown error");
   }
 }
+
+$("btnScan").addEventListener("click", scan);
+$("wallet").addEventListener("keydown", (e)=>{ if(e.key==="Enter") scan(); });
 </script>
 </body>
 </html>
